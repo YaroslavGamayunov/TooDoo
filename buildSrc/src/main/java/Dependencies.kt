@@ -6,26 +6,34 @@ object Versions {
 
     const val KOTLIN = "1.5.10"
     const val CORE_KTX = "1.5.0"
+    const val COROUTINES = "1.4.3"
 
     const val APPCOMPAT = "1.3.0"
     const val MATERIAL = "1.3.0"
     const val CONSTRAINT_LAYOUT = "2.0.4"
+    const val FRAGMENT = "1.3.4"
+
+    const val ROOM = "2.3.0"
+    const val DAGGER = "2.36"
+    const val CORE_LIBRARY_DESUGARING = "1.1.5"
 
     const val JUNIT = "4.13.2"
     const val JUNIT_EXT = "1.1.2"
     const val ESPRESSO_CORE = "3.3.0"
 
+    const val DETEKT = "1.17.1"
+
     const val MIN_SDK = 21
     const val COMPILE_SDK = 30
     const val TARGET_SDK = 30
-
-    const val DETEKT = "1.17.1"
 }
 
 object Dependencies {
     object Kotlin {
         const val STDLIB = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.KOTLIN}"
         const val CORE_KTX = "androidx.core:core-ktx:${Versions.CORE_KTX}"
+        const val COROUTINES =
+            "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.COROUTINES}"
     }
 
     object Android {
@@ -33,6 +41,16 @@ object Dependencies {
         const val MATERIAL = "com.google.android.material:material:${Versions.MATERIAL}"
         const val CONSTRAINT_LAYOUT =
             "androidx.constraintlayout:constraintlayout:${Versions.CONSTRAINT_LAYOUT}"
+        const val FRAGMENT_KTX = "androidx.fragment:fragment-ktx:${Versions.FRAGMENT}"
+
+        const val ROOM_COMPILER = "androidx.room:room-compiler:${Versions.ROOM}"
+        const val ROOM_KTX = "androidx.room:room-ktx:${Versions.ROOM}"
+        const val ROOM_RUNTIME = "androidx.room:room-runtime:${Versions.ROOM}"
+    }
+
+    object DI {
+        const val DAGGER = "com.google.dagger:dagger:${Versions.DAGGER}"
+        const val DAGGER_COMPILER = "com.google.dagger:dagger-compiler:${Versions.DAGGER}"
     }
 
     object Testing {
@@ -41,4 +59,7 @@ object Dependencies {
         const val ESPRESSO_CORE = "androidx.test.espresso:espresso-core:${Versions.ESPRESSO_CORE}"
         const val DETEKT = "io.gitlab.arturbosch.detekt"
     }
+
+    const val CORE_LIBRARY_DESUGARING =
+        "com.android.tools:desugar_jdk_libs:${Versions.CORE_LIBRARY_DESUGARING}"
 }
