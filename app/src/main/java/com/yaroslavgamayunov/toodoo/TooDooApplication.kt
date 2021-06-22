@@ -12,6 +12,6 @@ class TooDooApplication : Application() {
     }
 
     val viewModelComponent: ViewModelComponent by lazy {
-        DaggerViewModelComponent.builder().build()
+        DaggerViewModelComponent.builder().appModule(AppModule(this)).build()
     }
 }

@@ -15,6 +15,8 @@ abstract class TaskDatabase : RoomDatabase() {
         private const val name = "task_db"
         fun build(context: Context): TaskDatabase {
             return Room.databaseBuilder(context, TaskDatabase::class.java, name)
+                .addTypeConverter(TimeConverter())
+                .addTypeConverter(PriorityConverter())
                 .fallbackToDestructiveMigration().build()
         }
     }

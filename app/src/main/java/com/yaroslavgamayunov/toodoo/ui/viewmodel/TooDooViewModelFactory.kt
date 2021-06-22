@@ -6,7 +6,6 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
-@Singleton
 class TooDooViewModelFactory @Inject constructor(
     private val models: MutableMap<Class<out ViewModel>, ViewModel>
 ) : ViewModelProvider.Factory {

@@ -9,7 +9,6 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class GetAllTasksUseCase @Inject constructor(
-    @Named("ioDispatcher")
     dispatcher: CoroutineDispatcher,
     private val taskRepository: TaskRepository
 ) : UseCase<Unit, List<Task>>(dispatcher) {
