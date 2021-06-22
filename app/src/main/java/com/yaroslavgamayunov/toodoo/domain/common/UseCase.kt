@@ -4,10 +4,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 
-abstract class UseCase<in P, out R>(private val dispatcher: CoroutineDispatcher) {
+abstract class UseCase<in P, out R>(private val coroutineDispatcher: CoroutineDispatcher) {
     suspend operator fun invoke(params: P): Result<R> {
         return try {
-            withContext(dispatcher) {
+            withContext(coroutineDispatcher) {
                 val data = execute(params)
                 Result.Success(data)
             }
