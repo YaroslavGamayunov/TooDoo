@@ -29,6 +29,11 @@ android {
             )
         }
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -49,11 +54,15 @@ dependencies {
     implementation(Dependencies.Android.APPCOMPAT)
     implementation(Dependencies.Android.MATERIAL)
     implementation(Dependencies.Android.CONSTRAINT_LAYOUT)
+    implementation(Dependencies.Android.COORDINATOR_LAYOUT)
     implementation(Dependencies.Android.FRAGMENT_KTX)
 
     implementation(Dependencies.Android.ROOM_RUNTIME)
     implementation(Dependencies.Android.ROOM_KTX)
     kapt(Dependencies.Android.ROOM_COMPILER)
+
+    implementation(Dependencies.Android.NAVIGATION_UI_KTX)
+    implementation(Dependencies.Android.NAVIGATION_FRAGMENT_KTX)
 
     // DI
     implementation(Dependencies.DI.DAGGER)

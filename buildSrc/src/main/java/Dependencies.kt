@@ -11,7 +11,9 @@ object Versions {
     const val APPCOMPAT = "1.3.0"
     const val MATERIAL = "1.3.0"
     const val CONSTRAINT_LAYOUT = "2.0.4"
+    const val COORDINATOR_LAYOUT = "1.1.0"
     const val FRAGMENT = "1.3.4"
+    const val NAVIGATION = "2.3.5"
 
     const val ROOM = "2.3.0"
     const val DAGGER = "2.36"
@@ -41,11 +43,19 @@ object Dependencies {
         const val MATERIAL = "com.google.android.material:material:${Versions.MATERIAL}"
         const val CONSTRAINT_LAYOUT =
             "androidx.constraintlayout:constraintlayout:${Versions.CONSTRAINT_LAYOUT}"
-        const val FRAGMENT_KTX = "androidx.fragment:fragment-ktx:${Versions.FRAGMENT}"
+        const val COORDINATOR_LAYOUT =
+            "androidx.coordinatorlayout:coordinatorlayout:${Versions.COORDINATOR_LAYOUT}"
+        val FRAGMENT_KTX = "androidx.fragment:fragment-ktx:${Versions.FRAGMENT}"
 
         const val ROOM_COMPILER = "androidx.room:room-compiler:${Versions.ROOM}"
         const val ROOM_KTX = "androidx.room:room-ktx:${Versions.ROOM}"
         const val ROOM_RUNTIME = "androidx.room:room-runtime:${Versions.ROOM}"
+
+        const val NAVIGATION_FRAGMENT_KTX =
+            "androidx.navigation:navigation-fragment-ktx:${Versions.NAVIGATION}"
+        const val NAVIGATION_UI_KTX =
+            "androidx.navigation:navigation-ui-ktx:${Versions.NAVIGATION}"
+
     }
 
     object DI {

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Theme">
+        <attr name="tooDooElevated" format="color" />
+
+        <attr name="tooDooRed" format="color" />
+        <attr name="tooDooGreen" format="color" />
+        <attr name="tooDooBlue" format="color" />
+        <attr name="tooDooGray" format="color" />
+        <attr name="tooDooWhite" format="color" />
+
+        <attr name="tooDooLabelPrimaryColor" format="color" />
+        <attr name="tooDooLabelSecondaryColor" format="color" />
+        <attr name="tooDooLabelTertiaryColor" format="color" />
+        <attr name="tooDooLabelDisableColor" format="color" />
+
+        <attr name="tooDooSeparatorColor" format="color" />
+        <attr name="tooDooOverlayColor" format="color" />
+
+        <attr name="colorSurfaceSecondary" format="color" />
+    </declare-styleable>
+</resources>

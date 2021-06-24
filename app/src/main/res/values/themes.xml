@@ -1,16 +1,43 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.TooDoo" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
+    <style name="Theme.TooDoo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryVariant">?attr/colorPrimary</item>
+        <item name="colorOnPrimary">?attr/tooDooLabelPrimaryColor</item>
+
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorSecondaryVariant">?attr/colorSecondary</item>
+        <item name="colorOnSecondary">?attr/tooDooLabelPrimaryColor</item>
+
+        <item name="colorSurface">?attr/colorPrimary</item>
+        <item name="colorSurfaceSecondary">?attr/colorSecondary</item>
+        <item name="tooDooElevated">@color/elevated</item>
+
+        <!-- Status bar -->
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+
+        <!-- Custom theme color attributes -->
+        <item name="tooDooRed">@color/red</item>
+        <item name="tooDooGreen">@color/green</item>
+        <item name="tooDooBlue">@color/blue</item>
+        <item name="tooDooGray">@color/gray</item>
+        <item name="tooDooWhite">@color/white</item>
+
+        <item name="tooDooLabelPrimaryColor">@color/label_primary</item>
+        <item name="tooDooLabelSecondaryColor">@color/label_secondary</item>
+        <item name="tooDooLabelTertiaryColor">@color/label_tertiary</item>
+        <item name="tooDooLabelDisableColor">@color/label_disable</item>
+
+        <item name="tooDooSeparatorColor">@color/separator</item>
+        <item name="tooDooOverlayColor">@color/overlay</item>
+
+        <!-- Text styles -->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.TooDoo.LargeTitle</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.TooDoo.Title</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.TooDoo.Subhead</item>
+        <item name="textAppearanceButton">@style/TextAppearance.TooDoo.Button</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.TooDoo.Body</item>
+
     </style>
 </resources>

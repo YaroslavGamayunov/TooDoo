@@ -2,4 +2,8 @@
     <string name="app_name">TooDoo</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="my_tasks">Мои дела</string>
+    <string name="add_task">Добавить задачу</string>
+    <string name="show_completed_tasks">Показать выполненные задачи</string>
+    <string name="show_task_info">Показать информацию о задаче</string>
 </resources>

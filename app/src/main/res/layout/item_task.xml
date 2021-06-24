@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="horizontal"
+    android:paddingStart="19dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="19dp"
+    android:paddingBottom="16dp">
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/completedTaskCheckBox"
+        style="@style/Widget.TooDoo.CheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:clickable="false"
+        android:minWidth="0dp"
+        android:minHeight="0dp" />
+
+    <TextView
+        android:id="@+id/taskDescriptionTextView"
+        style="?attr/textAppearanceBody1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textColor="@color/task_item_description_text"
+        tools:text="Купить что-то где-то когда-нибудь в недалеком будущем" />
+
+    <ImageView
+        android:id="@+id/taskInfoImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/show_task_info"
+        android:focusable="true"
+        android:src="@drawable/ic_info"
+        app:tint="?attr/tooDooLabelTertiaryColor" />
+
+</LinearLayout>

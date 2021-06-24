@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.TooDoo.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">?attr/colorSurfaceSecondary</item>
+        <item name="cardCornerRadius">@dimen/cardview_radius</item>
+    </style>
+
+    <style name="Widget.TooDoo.Fab" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">?attr/tooDooBlue</item>
+        <item name="tint">?attr/tooDooWhite</item>
+    </style>
+
+    <style name="Widget.TooDoo.CheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/checkbox_button_tint</item>
+    </style>
+
+    <style name="TextAppearance.TooDoo.LargeTitle" parent="TextAppearance.MaterialComponents.Headline1">
+        <item name="android:textSize">32sp</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">?attr/tooDooLabelPrimaryColor</item>
+        <item name="android:textStyle">bold</item>
+        <!--<item name="android:TextfontWeight">500</item>-->
+    </style>
+
+    <style name="TextAppearance.TooDoo.Title" parent="TextAppearance.MaterialComponents.Headline2">
+        <item name="android:textSize">20sp</item>
+        <item name="android:lineSpacingExtra">12sp</item>
+        <item name="android:textColor">?attr/tooDooLabelPrimaryColor</item>
+        <item name="android:textStyle">bold</item>
+        <!--<item name="android:TextfontWeight">500</item>-->
+    </style>
+
+    <style name="TextAppearance.TooDoo.Subhead" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">?attr/tooDooLabelPrimaryColor</item>
+        <item name="android:textStyle">normal</item>
+        <!--<item name="android:TextfontWeight">400</item>-->
+    </style>
+
+    <style name="TextAppearance.TooDoo.Body" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+        <item name="android:textColor">?attr/tooDooLabelPrimaryColor</item>
+        <item name="android:textStyle">normal</item>
+        <!--<item name="android:TextfontWeight">400</item>-->
+    </style>
+
+    <style name="TextAppearance.TooDoo.Button" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">10sp</item>
+        <item name="android:textColor">?attr/tooDooLabelPrimaryColor</item>
+        <item name="android:textStyle">bold</item>
+        <!--<item name="android:TextfontWeight">500</item>-->
+    </style>
+</resources>
