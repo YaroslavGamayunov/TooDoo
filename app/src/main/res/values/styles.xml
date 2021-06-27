@@ -28,7 +28,7 @@
     </style>
 
     <style name="Widget.TooDoo.CheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
-        <item name="buttonTint">@color/checkbox_button_tint</item>
+        <item name="buttonTint">@color/checkbox_button_tint_normal</item>
     </style>
 
     <style name="Widget.TooDoo.Switch" parent="Widget.AppCompat.CompoundButton.Switch">

@@ -10,6 +10,7 @@ interface TaskRepository {
     suspend fun getAllTasks(): Flow<List<TaskEntity>>
     suspend fun getTask(id: Int): TaskEntity
     suspend fun getCompletedTasks(): Flow<List<TaskEntity>>
+    suspend fun getNumberOfCompletedTasks(): Flow<Int>
     suspend fun getUncompletedTasks(): Flow<List<TaskEntity>>
 
     suspend fun setCompleted(task: TaskEntity, isCompleted: Boolean)
@@ -28,6 +29,10 @@ class DefaultTaskRepository @Inject constructor(
 
     override suspend fun getCompletedTasks(): Flow<List<TaskEntity>> =
         taskDao.getAll(completed = true)
+
+    override suspend fun getNumberOfCompletedTasks(): Flow<Int> {
+        return taskDao.getNumberOfCompleted()
+    }
 
     override suspend fun getUncompletedTasks(): Flow<List<TaskEntity>> =
         taskDao.getAll(completed = false)

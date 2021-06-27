@@ -20,11 +20,20 @@
         android:minWidth="0dp"
         android:minHeight="0dp" />
 
+    <ImageView
+        android:id="@+id/taskPriorityIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="6dp"
+        android:contentDescription="@string/priority"
+        tools:src="@drawable/ic_low_priority" />
+
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
         android:layout_weight="1"
         android:orientation="vertical">
@@ -32,12 +41,12 @@
         <TextView
             android:id="@+id/taskDescriptionTextView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="3"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textColor="@color/task_item_description_text"
-            tools:text="Купить что-то где-то когда-нибудь в недалеком будущем Купить что-то где-то когда-нибудь в недалеком будущем" />
+            tools:text="Купить что-то где-то когда-нибудь в недалеком будущем Купить чdkjjkjkfkjfkjто-то где-то когда-нибудь в недалеком будущем" />
 
         <TextView
             android:id="@+id/taskDeadlineTextView"

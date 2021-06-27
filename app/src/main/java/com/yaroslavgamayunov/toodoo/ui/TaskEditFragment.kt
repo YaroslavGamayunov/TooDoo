@@ -152,6 +152,9 @@ class TaskEditFragment : Fragment() {
 
             showTimePicker(Instant.ofEpochMilli(time))
         }
+        datePicker.addOnCancelListener {
+            binding!!.taskTimeSwitch.isChecked = false
+        }
         datePicker.show(childFragmentManager, null)
     }
 

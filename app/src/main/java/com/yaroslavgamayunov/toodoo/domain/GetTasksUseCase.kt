@@ -27,9 +27,10 @@ class GetTasksUseCase @Inject constructor(
 
     private fun mapTaskFlow(params: GetTasksUseCaseParams): suspend (List<TaskEntity>) -> (List<Task>) {
         return { list ->
-            list.map {
-                TaskEntityMapper.toTask(it)
-            }
+            list
+                .map {
+                    TaskEntityMapper.toTask(it)
+                }
                 .filter { task ->
                     params.showCompletedTasks || (!task.isCompleted || task.taskId in params.currentlyCompletedTaskIds)
                 }

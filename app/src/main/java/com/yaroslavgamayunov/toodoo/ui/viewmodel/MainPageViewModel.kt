@@ -1,6 +1,7 @@
 package com.yaroslavgamayunov.toodoo.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.yaroslavgamayunov.toodoo.GetNumberOfCompletedTasksUseCase
 import com.yaroslavgamayunov.toodoo.domain.*
 import com.yaroslavgamayunov.toodoo.domain.common.Result
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
@@ -10,7 +11,8 @@ import javax.inject.Inject
 class MainPageViewModel @Inject constructor(
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val getTasksUseCase: GetTasksUseCase,
-    private val completeTaskUseCase: CompleteTaskUseCase
+    private val completeTaskUseCase: CompleteTaskUseCase,
+    private val getNumberOfCompletedTasksUseCase: GetNumberOfCompletedTasksUseCase
 ) : ViewModel() {
     // Ids of tasks completed during interaction with main page
     private val currentlyCompletedTaskIds = mutableSetOf<Int>()
@@ -30,4 +32,6 @@ class MainPageViewModel @Inject constructor(
             task to isCompleted
         )
     }
+
+    suspend fun getNumberOfCompletedTasks() = getNumberOfCompletedTasksUseCase(Unit)
 }

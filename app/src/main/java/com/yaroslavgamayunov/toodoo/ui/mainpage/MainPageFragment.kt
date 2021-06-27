@@ -1,9 +1,11 @@
 package com.yaroslavgamayunov.toodoo.ui.mainpage
 
+import android.media.Image
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,8 +15,12 @@ import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.TooDooApplication
 import com.yaroslavgamayunov.toodoo.databinding.FragmentMainPageBinding
 import com.yaroslavgamayunov.toodoo.domain.common.Result
+import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.MainPageViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
+import com.yaroslavgamayunov.toodoo.util.getDrawable
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +33,16 @@ class MainPageFragment : Fragment() {
     private var binding: FragmentMainPageBinding? = null
     private lateinit var taskAdapter: TaskAdapter
 
+
+    private var taskCollectingJob: Job? = null
     private var isShowingCompletedTasks = false
+        set(value) {
+            taskCollectingJob?.cancel()
+            if (view != null) {
+                taskCollectingJob = collectTasks(value)
+            }
+            field = value
+        }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,8 +72,29 @@ class MainPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentMainPageBinding.bind(view)
         setupTaskList()
-        binding?.addTaskFab?.setOnClickListener {
-            findNavController().navigate(R.id.action_mainPageFragment_to_taskEditFragment)
+        setupHeader()
+        binding!!.apply {
+            addTaskFab.setOnClickListener {
+                findNavController().navigate(R.id.action_mainPageFragment_to_taskEditFragment)
+            }
+            showCompletedTasksImageView.setOnClickListener {
+                if (isShowingCompletedTasks) {
+                    (it as ImageView).setImageDrawable(
+                        getDrawable(
+                            it.context,
+                            R.drawable.ic_visibility
+                        )
+                    )
+                } else {
+                    (it as ImageView).setImageDrawable(
+                        getDrawable(
+                            it.context,
+                            R.drawable.ic_visibility_off
+                        )
+                    )
+                }
+                isShowingCompletedTasks = !isShowingCompletedTasks
+            }
         }
     }
 
@@ -71,20 +107,11 @@ class MainPageFragment : Fragment() {
                     }
                 },
                 onTaskDelete = { task ->
-                    viewLifecycleOwner.lifecycleScope.launch {
+                    lifecycleScope.launch {
                         mainPageViewModel.deleteTask(task)
                     }
                 },
                 onTaskEdit = {})
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            val result = mainPageViewModel.tasks(isShowingCompletedTasks)
-            if (result is Result.Success) {
-                result.data.collect {
-                    taskAdapter.submitList(it)
-                }
-            }
-        }
 
         binding?.apply {
             taskRecyclerView.adapter = taskAdapter
@@ -93,7 +120,39 @@ class MainPageFragment : Fragment() {
                 attachToRecyclerView(taskRecyclerView)
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            collectTasks(isShowingCompletedTasks)
+        }
     }
+
+    private fun collectTasks(showingCompleted: Boolean): Job {
+        return viewLifecycleOwner.lifecycleScope.launch {
+            val result = mainPageViewModel.tasks(showingCompleted)
+            if (result is Result.Success) {
+                result.data.collect {
+                    taskAdapter.submitList(it)
+                }
+            }
+        }
+    }
+
+    private fun setupHeader() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = mainPageViewModel.getNumberOfCompletedTasks()
+            if (result is Result.Success) {
+                result.data.collect {
+                    binding!!.completedTaskCountTextView.text =
+                        requireActivity().resources.getQuantityString(
+                            R.plurals.completed_task_count,
+                            it,
+                            it
+                        )
+                }
+            }
+        }
+    }
+
 
     companion object {
         private const val SHOW_COMPLETED_TAG = "SHOW_COMPLETED"

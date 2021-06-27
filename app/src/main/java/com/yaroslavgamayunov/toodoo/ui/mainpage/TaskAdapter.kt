@@ -4,6 +4,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StrikethroughSpan
 import android.view.*
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -11,6 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
+import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
+import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
+import com.yaroslavgamayunov.toodoo.util.formatInstantSimple
+import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
+import com.yaroslavgamayunov.toodoo.util.getColorStateList
+import com.yaroslavgamayunov.toodoo.util.getDrawable
+import java.time.Instant
 
 class TaskAdapter(
     private val onTaskCheck: (Task) -> Unit,
@@ -33,6 +41,12 @@ class TaskAdapter(
 
         private val taskDescriptionTextView: TextView =
             itemView.findViewById(R.id.taskDescriptionTextView)
+
+        private val taskDeadlineTextView: TextView =
+            itemView.findViewById(R.id.taskDeadlineTextView)
+
+        private val taskPriorityIcon: ImageView =
+            itemView.findViewById(R.id.taskPriorityIcon)
 
         init {
             itemView.findViewById<View>(R.id.taskInfoImageView).setOnClickListener {
@@ -68,6 +82,38 @@ class TaskAdapter(
         fun bind(task: Task) {
             taskDescriptionTextView.text = task.description
             isCompleted = task.isCompleted
+
+            if (task.scheduleMode == TaskScheduleMode.Unspecified) {
+                taskDeadlineTextView.visibility = View.GONE
+            } else {
+                taskDeadlineTextView.visibility = View.VISIBLE
+                taskDeadlineTextView.text = formatInstantSimple(
+                    task.deadline,
+                    showTime = task.scheduleMode == TaskScheduleMode.ExactTime
+                )
+            }
+
+            checkBox.buttonTintList = if (task.deadline.isBefore(Instant.now())) {
+                getColorStateList(itemView.context, R.color.checkbox_button_tint_outdated)
+            } else {
+                getColorStateList(itemView.context, R.color.checkbox_button_tint_normal)
+            }
+
+            val taskDrawable = when (task.priority) {
+                TaskPriority.None -> null
+                TaskPriority.Low -> getDrawable(
+                    itemView.context,
+                    R.drawable.ic_low_priority,
+                    color = getColorFromAttrs(itemView.context, R.attr.tooDooGray)
+                )
+                TaskPriority.High -> getDrawable(
+                    itemView.context,
+                    R.drawable.ic_high_priority,
+                    color = getColorFromAttrs(itemView.context, R.attr.tooDooRed)
+                )
+            }
+
+            taskPriorityIcon.setImageDrawable(taskDrawable)
         }
     }
 

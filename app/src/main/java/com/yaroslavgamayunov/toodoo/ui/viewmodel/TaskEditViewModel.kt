@@ -53,7 +53,12 @@ class TaskEditViewModel @Inject constructor(
     }
 
     fun updateScheduleMode(scheduleMode: TaskScheduleMode) {
-        _editableTask.value = _editableTask.value.copy(scheduleMode = scheduleMode)
+        _editableTask.let {
+            it.value = if (scheduleMode == TaskScheduleMode.Unspecified) it.value.copy(
+                scheduleMode = scheduleMode,
+                deadline = Instant.MAX
+            ) else it.value.copy(scheduleMode = scheduleMode)
+        }
     }
 
     suspend fun saveChanges() {

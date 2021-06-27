@@ -1,5 +1,6 @@
 package com.yaroslavgamayunov.toodoo.di
 
+import com.yaroslavgamayunov.toodoo.GetNumberOfCompletedTasksUseCase
 import com.yaroslavgamayunov.toodoo.data.TaskRepository
 import com.yaroslavgamayunov.toodoo.domain.*
 import dagger.Module
@@ -43,4 +44,11 @@ class UseCaseModule {
         coroutineDispatcher: CoroutineDispatcher,
         taskRepository: TaskRepository
     ) = GetSingleTaskByIdUseCase(coroutineDispatcher, taskRepository)
+
+    @Provides
+    fun provideGetNumberOfCompletedTasksUseCase(
+        @Named("ioDispatcher")
+        coroutineDispatcher: CoroutineDispatcher,
+        taskRepository: TaskRepository
+    ) = GetNumberOfCompletedTasksUseCase(coroutineDispatcher, taskRepository)
 }
