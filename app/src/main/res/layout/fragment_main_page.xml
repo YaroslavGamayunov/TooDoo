@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
+    android:fitsSystemWindows="true"
     tools:context=".ui.mainpage.MainPageFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -19,6 +20,7 @@
             app:expandedTitleMarginBottom="44dp"
             app:expandedTitleMarginStart="60dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="@color/status_scrim"
             app:titleEnabled="true">
 
             <TextView
@@ -30,7 +32,6 @@
                 android:layout_marginBottom="16dp"
                 android:textAppearance="?attr/textAppearanceBody1"
                 android:textColor="?attr/tooDooLabelTertiaryColor"
-                app:contentScrim="?attr/tooDooBlue"
                 app:layout_collapseMode="parallax" />
 
             <ImageView

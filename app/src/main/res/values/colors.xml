@@ -17,4 +17,5 @@
 
     <color name="separator">#33000000</color>
     <color name="overlay">#0F000000</color>
+    <color name="status_scrim">#FFF7F6F2</color>
 </resources>

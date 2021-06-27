@@ -18,7 +18,8 @@
 
         <!-- Status bar -->
         <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/light_statusbar</item>
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
 
         <!-- Custom theme color attributes -->
         <item name="tooDooRed">@color/red</item>
