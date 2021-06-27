@@ -1,7 +1,6 @@
 package com.yaroslavgamayunov.toodoo.data.mappers
 
 import com.yaroslavgamayunov.toodoo.data.db.TaskEntity
-import com.yaroslavgamayunov.toodoo.domain.TaskParameters
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 
 object TaskEntityMapper {
@@ -10,7 +9,7 @@ object TaskEntityMapper {
         description = task.description,
         isCompleted = task.isCompleted,
         deadline = task.deadline,
-        isScheduledAtExactTime = task.isScheduledAtExactTime,
+        scheduleMode = task.scheduleMode,
         priority = task.priority
     )
 
@@ -19,16 +18,7 @@ object TaskEntityMapper {
         description = taskEntity.description,
         isCompleted = taskEntity.isCompleted,
         deadline = taskEntity.deadline,
-        isScheduledAtExactTime = taskEntity.isScheduledAtExactTime,
+        scheduleMode = taskEntity.scheduleMode,
         priority = taskEntity.priority
-    )
-
-    fun toTaskEntity(parameters: TaskParameters) = TaskEntity(
-        taskId = 0,
-        description = parameters.description,
-        isCompleted = parameters.isCompleted,
-        deadline = parameters.deadline,
-        isScheduledAtExactTime = parameters.isScheduledAtExactTime,
-        priority = parameters.priority
     )
 }

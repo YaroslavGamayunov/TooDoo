@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
+import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
 import java.time.Instant
 
 @Entity(tableName = "tasks")
@@ -15,7 +16,7 @@ data class TaskEntity(
     @ColumnInfo(name = "completed")
     val isCompleted: Boolean,
     val deadline: Instant,
-    @ColumnInfo(name = "exact_time")
-    val isScheduledAtExactTime: Boolean,
+    @ColumnInfo(name = "schedule_mode")
+    val scheduleMode: TaskScheduleMode,
     val priority: TaskPriority
 )

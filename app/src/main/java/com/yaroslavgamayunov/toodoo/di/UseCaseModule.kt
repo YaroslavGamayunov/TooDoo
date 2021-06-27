@@ -1,9 +1,7 @@
 package com.yaroslavgamayunov.toodoo.di
 
 import com.yaroslavgamayunov.toodoo.data.TaskRepository
-import com.yaroslavgamayunov.toodoo.domain.AddTaskUseCase
-import com.yaroslavgamayunov.toodoo.domain.DeleteTaskUseCase
-import com.yaroslavgamayunov.toodoo.domain.GetAllTasksUseCase
+import com.yaroslavgamayunov.toodoo.domain.*
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineDispatcher
@@ -26,9 +24,23 @@ class UseCaseModule {
     ) = DeleteTaskUseCase(coroutineDispatcher, taskRepository)
 
     @Provides
-    fun provideGetAllTasksUseCase(
+    fun provideGetTasksUseCase(
         @Named("ioDispatcher")
         coroutineDispatcher: CoroutineDispatcher,
         taskRepository: TaskRepository
-    ) = GetAllTasksUseCase(coroutineDispatcher, taskRepository)
+    ) = GetTasksUseCase(coroutineDispatcher, taskRepository)
+
+    @Provides
+    fun provideCompleteTaskUseCase(
+        @Named("ioDispatcher")
+        coroutineDispatcher: CoroutineDispatcher,
+        taskRepository: TaskRepository
+    ) = CompleteTaskUseCase(coroutineDispatcher, taskRepository)
+
+    @Provides
+    fun provideGetSingleTaskByIdUseCase(
+        @Named("ioDispatcher")
+        coroutineDispatcher: CoroutineDispatcher,
+        taskRepository: TaskRepository
+    ) = GetSingleTaskByIdUseCase(coroutineDispatcher, taskRepository)
 }

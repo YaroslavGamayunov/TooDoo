@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainPageFragment"
-        android:name="com.yaroslavgamayunov.toodoo.ui.MainPageFragment"
+        android:name="com.yaroslavgamayunov.toodoo.ui.mainpage.MainPageFragment"
         android:label="@string/my_tasks"
         tools:layout="@layout/fragment_main_page">
         <action

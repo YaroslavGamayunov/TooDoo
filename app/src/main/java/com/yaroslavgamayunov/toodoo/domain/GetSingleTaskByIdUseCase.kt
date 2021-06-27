@@ -7,12 +7,11 @@ import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
-class AddTaskUseCase @Inject constructor(
+class GetSingleTaskByIdUseCase @Inject constructor(
     dispatcher: CoroutineDispatcher,
     private val taskRepository: TaskRepository
-) :
-    UseCase<Task, Unit>(dispatcher) {
-    override suspend fun execute(params: Task) {
-        taskRepository.insertTask(TaskEntityMapper.toTaskEntity(params))
+) : UseCase<Int, Task>(dispatcher) {
+    override suspend fun execute(params: Int): Task {
+        return TaskEntityMapper.toTask(taskRepository.getTask(id = params))
     }
 }

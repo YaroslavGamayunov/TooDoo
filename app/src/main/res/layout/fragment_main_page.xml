@@ -1,90 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
-    app:layoutDescription="@xml/fragment_main_page_scene"
-    tools:context=".ui.MainPageFragment">
+    tools:context=".ui.mainpage.MainPageFragment">
 
-    <TextView
-        android:id="@+id/textView"
-        style="?attr/textAppearanceHeadline1"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/mainPageAppbarLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="60dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/my_tasks"
-        app:autoSizeMaxTextSize="32sp"
-        app:autoSizeMinTextSize="20sp"
-        app:autoSizeStepGranularity="1sp"
-        app:autoSizeTextType="none"
-        app:layout_constraintBottom_toTopOf="@id/completedTasksTextView"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/completedTasksTextView"
-        style="@style/TextAppearance.TooDoo.Body"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:textColor="?attr/tooDooLabelTertiaryColor"
-        app:layout_constraintBottom_toTopOf="@id/toolbarGuideline"
-        app:layout_constraintEnd_toStartOf="@+id/visibilitySwitchImageView"
-        app:layout_constraintStart_toStartOf="@+id/textView"
-        tools:text="Выполнено — 5" />
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_appbar_height"
+            app:expandedTitleMarginBottom="40dp"
+            app:expandedTitleMarginStart="60dp"
+            app:expandedTitleTextAppearance="?attr/textAppearanceHeadline1"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-    <ImageView
-        android:id="@+id/visibilitySwitchImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:contentDescription="@string/show_completed_tasks"
-        android:focusable="true"
-        android:src="@drawable/ic_visibility"
-        app:layout_constraintBottom_toBottomOf="@+id/completedTasksTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/completedTasksTextView"
-        app:tint="?attr/tooDooBlue" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="60dp"
+                android:layout_marginBottom="16dp"
+                tools:text="Выполнено — 5"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="?attr/tooDooLabelTertiaryColor"
+                app:layout_collapseMode="parallax" />
 
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/mainPageToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:subtitle="@string/my_tasks"
+                app:subtitleTextColor="@color/blue"
+                app:title="@string/my_tasks" />
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-    <View
-        android:id="@+id/separator"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:alpha="0"
-        android:background="?attr/tooDooSeparatorColor"
-        app:layout_constraintBottom_toTopOf="@id/toolbarGuideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/toolbarGuideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="@dimen/main_appbar_height" />
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbarGuideline">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp">
+            android:layout_height="match_parent">
 
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.TooDoo.CardView"
@@ -99,7 +65,7 @@
                     android:layout_height="match_parent"
                     android:nestedScrollingEnabled="false"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+                    tools:listitem="@layout/item_task" />
 
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
@@ -110,11 +76,10 @@
         style="@style/Widget.TooDoo.Fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="40dp"
         android:contentDescription="@string/add_task"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_add" />
 
-</androidx.constraintlayout.motion.widget.MotionLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

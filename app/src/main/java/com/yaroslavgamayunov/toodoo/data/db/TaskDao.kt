@@ -1,17 +1,22 @@
 package com.yaroslavgamayunov.toodoo.data.db
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
+@Entity
 interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(tasks: List<TaskEntity>)
 
     @Query("SELECT * FROM tasks WHERE completed = :completed")
-    suspend fun getAll(completed: Boolean): List<TaskEntity>
+    fun getAll(completed: Boolean): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks")
-    suspend fun getAll(): List<TaskEntity>
+    fun getAll(): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE task_id = :id LIMIT 1")
+    suspend fun getTask(id: Int): TaskEntity
 
     @Delete
     suspend fun delete(task: TaskEntity)

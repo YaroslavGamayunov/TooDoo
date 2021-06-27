@@ -6,13 +6,13 @@ import com.yaroslavgamayunov.toodoo.domain.common.UseCase
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
-import javax.inject.Named
 
-class GetAllTasksUseCase @Inject constructor(
+class CompleteTaskUseCase @Inject constructor(
     dispatcher: CoroutineDispatcher,
     private val taskRepository: TaskRepository
-) : UseCase<Unit, List<Task>>(dispatcher) {
-    override suspend fun execute(params: Unit): List<Task> {
-        return taskRepository.getAllTasks().map { TaskEntityMapper.toTask(it) }
+) : UseCase<Pair<Task, Boolean>, Unit>(dispatcher) {
+    override suspend fun execute(params: Pair<Task, Boolean>) {
+        val (task, completed) = params
+        taskRepository.setCompleted(TaskEntityMapper.toTaskEntity(task), completed)
     }
 }

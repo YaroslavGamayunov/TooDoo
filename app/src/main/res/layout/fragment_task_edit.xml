@@ -1,14 +1,188 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
     tools:context=".ui.TaskEditFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:liftOnScroll="true">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/taskEditFragmentToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:theme="@style/Widget.TooDoo.Toolbar"
+                app:layout_collapseMode="pin"
+                app:menu="@menu/menu_task_edit_toolbar"
+                app:navigationIcon="@drawable/ic_close" />
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:clipToPadding="false"
+        android:paddingBottom="64dp"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-</FrameLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/leftSideGuideline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="16dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/rightSideGuideline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="16dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/taskDescriptionCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="?attr/colorSurfaceSecondary"
+                app:cardCornerRadius="@dimen/cardview_radius"
+                app:layout_constraintEnd_toStartOf="@+id/rightSideGuideline"
+                app:layout_constraintStart_toStartOf="@+id/leftSideGuideline"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <EditText
+                    android:id="@+id/taskDescriptionEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:autofillHints=""
+                    android:background="@android:color/transparent"
+                    android:cursorVisible="true"
+                    android:gravity="top"
+                    android:hint="@string/task_edit_description_hint"
+                    android:imeOptions="actionDone"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:minHeight="100dp"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textColor="?attr/tooDooLabelPrimaryColor"
+                    android:textColorHint="?attr/tooDooLabelTertiaryColor"
+                    android:textCursorDrawable="@null" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:id="@+id/priorityPicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="@+id/leftSideGuideline"
+                app:layout_constraintTop_toBottomOf="@id/taskDescriptionCard">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/priority"
+                    android:textAppearance="?attr/textAppearanceBody1" />
+
+                <TextView
+                    android:id="@+id/priorityTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceSubtitle1"
+                    android:textColor="?attr/tooDooLabelTertiaryColor"
+                    tools:text="Нет" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/separator1"
+                android:layout_width="0dp"
+                android:layout_height="0.7dp"
+                android:layout_marginTop="16dp"
+                android:background="?attr/tooDooSeparatorColor"
+                app:layout_constraintEnd_toEndOf="@id/rightSideGuideline"
+                app:layout_constraintStart_toStartOf="@id/leftSideGuideline"
+                app:layout_constraintTop_toBottomOf="@id/priorityPicker" />
+
+            <LinearLayout
+                android:id="@+id/dateTimePicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="@+id/leftSideGuideline"
+                app:layout_constraintTop_toBottomOf="@id/separator1">
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/complete_until"
+                    android:textAppearance="?attr/textAppearanceBody1" />
+
+                <TextView
+                    android:id="@+id/taskDeadlineTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceSubtitle1"
+                    android:textColor="?attr/tooDooBlue"
+                    tools:text="2 июня 2021" />
+            </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/taskTimeSwitch"
+                style="@style/Widget.TooDoo.Switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@id/dateTimePicker"
+                app:layout_constraintEnd_toEndOf="@id/rightSideGuideline"
+
+                app:layout_constraintTop_toTopOf="@id/dateTimePicker" />
+
+            <View
+                android:id="@+id/separator2"
+                android:layout_width="0dp"
+                android:layout_height="0.7dp"
+                android:layout_marginTop="40dp"
+                android:background="?attr/tooDooSeparatorColor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dateTimePicker" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="?attr/colorSurface"
+                android:clickable="true"
+                android:drawablePadding="16dp"
+                android:focusable="true"
+                android:text="@string/delete"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="?attr/tooDooRed"
+                app:elevation="0dp"
+                app:icon="@drawable/ic_delete"
+                app:iconTint="?attr/tooDooRed"
+                app:layout_constraintStart_toStartOf="@id/leftSideGuideline"
+                app:layout_constraintTop_toBottomOf="@id/separator2"
+                app:rippleColor="?attr/tooDooRed" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

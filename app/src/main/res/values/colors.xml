@@ -17,4 +17,6 @@
 
     <color name="separator">#33000000</color>
     <color name="overlay">#0F000000</color>
+
+    <color name="blue_opacity_30">#4D007AFF</color>
 </resources>
