@@ -1,2 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <color name="color_primary">#161618</color>
+    <color name="color_secondary">#252528</color>
+    <color name="elevated">#3C3C3F</color>
+
+    <color name="red">#FF453A</color>
+    <color name="green">#32D74B</color>
+    <color name="blue">#0A84FF</color>
+    <color name="gray">#8E8E93</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="label_primary">#FFFFFF</color>
+    <color name="label_secondary">#99FFFFFF</color>
+    <color name="label_tertiary">#66FFFFFF</color>
+    <color name="label_disable">#26FFFFFF</color>
+
+    <color name="separator">#33FFFFFF</color>
+    <color name="overlay">#52000000</color>
+</resources>
