@@ -21,7 +21,6 @@
         <item quantity="zero">Выполнено %d задач</item>
         <item quantity="one">Выполнена %d задача</item>
         <item quantity="two">Выполнено %d задачи</item>
-        <item quantity="few">Выполнено %d задач</item>
         <item quantity="other">Выполнено %d задач</item>
     </plurals>
 

@@ -95,6 +95,9 @@ class MainPageFragment : Fragment() {
                 }
                 isShowingCompletedTasks = !isShowingCompletedTasks
             }
+            mainPageAppbarLayout.setOnClickListener {
+                mainPageScrollView.smoothScrollTo(0, 0)
+            }
         }
     }
 
