@@ -22,7 +22,7 @@ import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TaskEditViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
-import com.yaroslavgamayunov.toodoo.util.formatInstantSimple
+import com.yaroslavgamayunov.toodoo.util.formatDate
 import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
 import com.yaroslavgamayunov.toodoo.util.getColoredText
 import kotlinx.coroutines.flow.collect
@@ -31,6 +31,7 @@ import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+
 
 class TaskEditFragment : Fragment() {
 
@@ -90,8 +91,8 @@ class TaskEditFragment : Fragment() {
             }
 
             taskDeadlineTextView.text =
-                if (task.scheduleMode == TaskScheduleMode.Unspecified) "" else formatInstantSimple(
-                    task.deadline,
+                if (task.scheduleMode == TaskScheduleMode.Unspecified) ""
+                else task.deadline.formatDate(
                     showTime = task.scheduleMode == TaskScheduleMode.ExactTime
                 )
 
@@ -109,9 +110,8 @@ class TaskEditFragment : Fragment() {
             R.menu.menu_task_priority,
             onMenuInflated = { popupMenu ->
                 popupMenu.menu.findItem(R.id.high).let {
-                    it.title = getColoredText(
-                        it.title,
-                        getColorFromAttrs(requireActivity(), R.attr.tooDooRed)
+                    it.title = it.title.getColoredText(
+                        requireActivity().getColorFromAttrs(R.attr.tooDooRed)
                     )
                 }
             },
@@ -152,9 +152,7 @@ class TaskEditFragment : Fragment() {
 
             showTimePicker(Instant.ofEpochMilli(time))
         }
-        datePicker.addOnCancelListener {
-            binding!!.taskTimeSwitch.isChecked = false
-        }
+
         datePicker.show(childFragmentManager, null)
     }
 

@@ -1,6 +1,5 @@
 package com.yaroslavgamayunov.toodoo.ui.mainpage
 
-import android.media.Image
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,12 +14,10 @@ import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.TooDooApplication
 import com.yaroslavgamayunov.toodoo.databinding.FragmentMainPageBinding
 import com.yaroslavgamayunov.toodoo.domain.common.Result
-import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.MainPageViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
-import com.yaroslavgamayunov.toodoo.util.getDrawable
+import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -73,6 +70,7 @@ class MainPageFragment : Fragment() {
         binding = FragmentMainPageBinding.bind(view)
         setupTaskList()
         setupHeader()
+
         binding!!.apply {
             addTaskFab.setOnClickListener {
                 findNavController().navigate(R.id.action_mainPageFragment_to_taskEditFragment)
@@ -80,15 +78,13 @@ class MainPageFragment : Fragment() {
             showCompletedTasksImageView.setOnClickListener {
                 if (isShowingCompletedTasks) {
                     (it as ImageView).setImageDrawable(
-                        getDrawable(
-                            it.context,
+                        it.context.getDrawableCompat(
                             R.drawable.ic_visibility
                         )
                     )
                 } else {
                     (it as ImageView).setImageDrawable(
-                        getDrawable(
-                            it.context,
+                        it.context.getDrawableCompat(
                             R.drawable.ic_visibility_off
                         )
                     )
@@ -97,6 +93,19 @@ class MainPageFragment : Fragment() {
             }
             mainPageAppbarLayout.setOnClickListener {
                 mainPageScrollView.smoothScrollTo(0, 0)
+                mainPageAppbarLayout.setExpanded(true)
+            }
+        }
+    }
+
+
+    private fun collectTasks(showingCompleted: Boolean): Job {
+        return viewLifecycleOwner.lifecycleScope.launch {
+            val result = mainPageViewModel.tasks(showingCompleted)
+            if (result is Result.Success) {
+                result.data.collect {
+                    taskAdapter.submitList(it)
+                }
             }
         }
     }
@@ -124,20 +133,7 @@ class MainPageFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            collectTasks(isShowingCompletedTasks)
-        }
-    }
-
-    private fun collectTasks(showingCompleted: Boolean): Job {
-        return viewLifecycleOwner.lifecycleScope.launch {
-            val result = mainPageViewModel.tasks(showingCompleted)
-            if (result is Result.Success) {
-                result.data.collect {
-                    taskAdapter.submitList(it)
-                }
-            }
-        }
+        taskCollectingJob = collectTasks(isShowingCompletedTasks)
     }
 
     private fun setupHeader() {

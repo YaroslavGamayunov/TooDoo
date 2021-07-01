@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
 import com.yaroslavgamayunov.toodoo.util.getDimension
-import com.yaroslavgamayunov.toodoo.util.getDrawable
+import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
 import kotlin.math.roundToInt
 
 
@@ -58,7 +58,6 @@ class TaskItemTouchHelperCallback :
     }
 
 
-
     private fun drawBackground(itemView: View, canvas: Canvas, dX: Float) {
         if (dX > 0) {
             canvas.clipRect(
@@ -72,18 +71,18 @@ class TaskItemTouchHelperCallback :
             )
         }
         val backgroundColorId = if (dX > 0) R.attr.tooDooGreen else R.attr.tooDooRed
-        canvas.drawColor(getColorFromAttrs(itemView.context, backgroundColorId))
+        canvas.drawColor(itemView.context.getColorFromAttrs(backgroundColorId))
     }
 
     private fun getIcon(itemView: View, dX: Float): Drawable? {
         val drawableId = if (dX > 0) R.drawable.ic_check else R.drawable.ic_delete
-        return getDrawable(itemView.context, drawableId)
+        return itemView.context.getDrawableCompat(drawableId)
     }
 
     private fun drawIcon(itemView: View, canvas: Canvas, icon: Drawable?, dX: Float) {
         if (icon == null) return
 
-        val iconColor = getColorFromAttrs(itemView.context, R.attr.tooDooWhite)
+        val iconColor = itemView.context.getColorFromAttrs(R.attr.tooDooWhite)
 
         icon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
             iconColor,
@@ -91,7 +90,7 @@ class TaskItemTouchHelperCallback :
         )
 
         val iconMargin: Int =
-            getDimension(itemView.context, R.dimen.task_item_icon_margin).roundToInt()
+            itemView.context.getDimension(R.dimen.task_item_icon_margin).roundToInt()
         val horizontalMargin = (itemView.height - icon.intrinsicHeight) / 2
 
         val top = itemView.top + horizontalMargin

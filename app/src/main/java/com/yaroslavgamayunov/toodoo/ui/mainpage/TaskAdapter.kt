@@ -14,10 +14,10 @@ import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
-import com.yaroslavgamayunov.toodoo.util.formatInstantSimple
+import com.yaroslavgamayunov.toodoo.util.formatDate
 import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
-import com.yaroslavgamayunov.toodoo.util.getColorStateList
-import com.yaroslavgamayunov.toodoo.util.getDrawable
+import com.yaroslavgamayunov.toodoo.util.getColorStateListCompat
+import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
 import java.time.Instant
 
 class TaskAdapter(
@@ -87,29 +87,27 @@ class TaskAdapter(
                 taskDeadlineTextView.visibility = View.GONE
             } else {
                 taskDeadlineTextView.visibility = View.VISIBLE
-                taskDeadlineTextView.text = formatInstantSimple(
-                    task.deadline,
+                taskDeadlineTextView.text = task.deadline.formatDate(
                     showTime = task.scheduleMode == TaskScheduleMode.ExactTime
                 )
             }
 
             checkBox.buttonTintList = if (task.deadline.isBefore(Instant.now())) {
-                getColorStateList(itemView.context, R.color.checkbox_button_tint_outdated)
+                itemView.context.getColorStateListCompat(R.color.checkbox_button_tint_outdated)
             } else {
-                getColorStateList(itemView.context, R.color.checkbox_button_tint_normal)
+                itemView.context.getColorStateListCompat(R.color.checkbox_button_tint_normal)
             }
+
 
             val taskDrawable = when (task.priority) {
                 TaskPriority.None -> null
-                TaskPriority.Low -> getDrawable(
-                    itemView.context,
+                TaskPriority.Low -> itemView.context.getDrawableCompat(
                     R.drawable.ic_low_priority,
-                    color = getColorFromAttrs(itemView.context, R.attr.tooDooGray)
+                    color = itemView.context.getColorFromAttrs(R.attr.tooDooGray)
                 )
-                TaskPriority.High -> getDrawable(
-                    itemView.context,
+                TaskPriority.High -> itemView.context.getDrawableCompat(
                     R.drawable.ic_high_priority,
-                    color = getColorFromAttrs(itemView.context, R.attr.tooDooRed)
+                    color = itemView.context.getColorFromAttrs(R.attr.tooDooRed)
                 )
             }
 

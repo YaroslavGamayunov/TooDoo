@@ -2,7 +2,7 @@ package com.yaroslavgamayunov.toodoo.domain
 
 import com.yaroslavgamayunov.toodoo.data.TaskRepository
 import com.yaroslavgamayunov.toodoo.data.db.TaskEntity
-import com.yaroslavgamayunov.toodoo.data.mappers.TaskEntityMapper
+import com.yaroslavgamayunov.toodoo.data.mappers.toTask
 import com.yaroslavgamayunov.toodoo.domain.common.UseCase
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import kotlinx.coroutines.CoroutineDispatcher
@@ -29,7 +29,7 @@ class GetTasksUseCase @Inject constructor(
         return { list ->
             list
                 .map {
-                    TaskEntityMapper.toTask(it)
+                    it.toTask()
                 }
                 .filter { task ->
                     params.showCompletedTasks || (!task.isCompleted || task.taskId in params.currentlyCompletedTaskIds)

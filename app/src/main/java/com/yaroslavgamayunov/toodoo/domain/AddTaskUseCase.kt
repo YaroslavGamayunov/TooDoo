@@ -1,7 +1,7 @@
 package com.yaroslavgamayunov.toodoo.domain
 
 import com.yaroslavgamayunov.toodoo.data.TaskRepository
-import com.yaroslavgamayunov.toodoo.data.mappers.TaskEntityMapper
+import com.yaroslavgamayunov.toodoo.data.mappers.toTaskEntity
 import com.yaroslavgamayunov.toodoo.domain.common.UseCase
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import kotlinx.coroutines.CoroutineDispatcher
@@ -13,6 +13,6 @@ class AddTaskUseCase @Inject constructor(
 ) :
     UseCase<Task, Unit>(dispatcher) {
     override suspend fun execute(params: Task) {
-        taskRepository.insertTask(TaskEntityMapper.toTaskEntity(params))
+        taskRepository.insertTask(params.toTaskEntity())
     }
 }
