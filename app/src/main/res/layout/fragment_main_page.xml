@@ -41,7 +41,7 @@
                 android:layout_gravity="bottom|end"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:contentDescription="@string/show_completed"
+                android:contentDescription="@string/show_completed_tasks"
                 android:src="@drawable/ic_visibility"
                 app:layout_collapseMode="pin"
                 app:tint="?attr/tooDooBlue" />

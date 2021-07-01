@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TooDoo</string>
     <string name="my_tasks">Мои дела</string>
@@ -20,10 +21,4 @@
         <item quantity="many">Выполнено %d задач</item>
         <item quantity="other">Выполнено %d задач</item>
     </plurals>
-
-    <string-array name="task_priorities">
-        <item>@string/priority_none</item>
-        <item>@string/priority_low</item>
-        <item>@string/priority_high</item>
-    </string-array>
 </resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TooDoo</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="my_tasks">My tasks</string>
+    <string name="add_task">Add task</string>
+    <string name="show_completed_tasks">Show completed tasks</string>
+    <string name="show_task_info">Show task information</string>
+    <string name="task_edit_description_hint">Things to do…</string>
+    <string name="priority">Priority</string>
+    <string name="complete_until">Complete until</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="priority_high">!! High</string>
+    <string name="priority_low">Low</string>
+    <string name="priority_none">None</string>
+    <string name="datepicker_title">Pick date</string>
+    <string name="timepicker_title">Pick time</string>
+    <plurals name="completed_task_count">
+        <item quantity="one">One task completed</item>
+        <item quantity="other">%d tasks completed</item>
+    </plurals>
+</resources>
