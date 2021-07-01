@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="TooDoo.PopupMenu" parent="@android:style/Widget.PopupMenu">
+        <item name="android:popupBackground">?attr/tooDooElevated</item>
+    </style>
+
     <style name="Widget.TooDoo.CardView" parent="Widget.MaterialComponents.CardView">
         <item name="cardBackgroundColor">?attr/colorSurfaceSecondary</item>
         <item name="cardCornerRadius">@dimen/cardview_radius</item>

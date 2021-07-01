@@ -15,11 +15,12 @@
 
         <item name="materialCalendarTheme">@style/ThemeOverlay.TooDoo.MaterialCalendar</item>
         <item name="materialTimePickerTheme">@style/ThemeOverlay.TooDoo.MaterialTimePicker</item>
+        <item name="android:popupMenuStyle">@style/TooDoo.PopupMenu</item>
 
         <!-- Status bar -->
         <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/light_statusbar</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/status_color</item>
 
         <!-- Custom theme color attributes -->
         <item name="tooDooRed">@color/red</item>
