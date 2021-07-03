@@ -2,6 +2,10 @@ style:
   MaxLineLength:
     active: true
     maxLineLength: 120
+  NewLineAtEndOfFile:
+    active: false
+  WildcardImport:
+    active: false
 
 naming:
   FunctionNaming:
