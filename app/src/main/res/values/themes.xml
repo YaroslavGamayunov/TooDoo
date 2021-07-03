@@ -15,7 +15,9 @@
 
         <item name="materialCalendarTheme">@style/ThemeOverlay.TooDoo.MaterialCalendar</item>
         <item name="materialTimePickerTheme">@style/ThemeOverlay.TooDoo.MaterialTimePicker</item>
-        <item name="android:popupMenuStyle">@style/TooDoo.PopupMenu</item>
+        <item name="android:popupMenuStyle">@style/Widget.TooDoo.PopupMenu</item>
+        <item name="snackbarButtonStyle">@style/Widget.TooDoo.Snackbar.Button</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.TooDoo.MaterialAlertDialog</item>
 
         <!-- Status bar -->
         <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/light_statusbar</item>

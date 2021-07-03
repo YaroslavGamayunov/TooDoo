@@ -1,24 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TooDoo</string>
-    <string name="my_tasks">Мои дела</string>
-    <string name="add_task">Добавить задачу</string>
-    <string name="show_completed_tasks">Показать выполненные задачи</string>
-    <string name="show_task_info">Показать информацию о задаче</string>
-    <string name="task_edit_description_hint">Что надо сделать…</string>
-    <string name="priority">Важность</string>
-    <string name="complete_until">Сделать до</string>
-    <string name="delete">Удалить</string>
-    <string name="save">Сохранить</string>
-    <string name="priority_high">!! Высокий</string>
-    <string name="priority_low">Низкий</string>
-    <string name="priority_none">Нет</string>
-    <string name="datepicker_title">Выберите дату</string>
-    <string name="timepicker_title">Выберите время</string>
+    <string name="my_tasks">My tasks</string>
+    <string name="add_task">Add task</string>
+    <string name="show_completed_tasks">Show completed tasks</string>
+    <string name="show_task_info">Show task information</string>
+    <string name="task_edit_description_hint">Things to do…</string>
+    <string name="priority">Priority</string>
+    <string name="complete_until">Complete until</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="priority_high">!! High</string>
+    <string name="priority_low">Low</string>
+    <string name="priority_none">None</string>
+    <string name="datepicker_title">Pick date</string>
+    <string name="timepicker_title">Pick time</string>
+    <string name="undo">Undo</string>
+    <string name="task_deletion_dialog_title">Delete the task?</string>
+    <string name="cancel">Cancel</string>
+
     <plurals name="completed_task_count">
-        <item quantity="one">Выполнена %d задача</item>
-        <item quantity="few">Выполнено %d задачи</item>
-        <item quantity="many">Выполнено %d задач</item>
-        <item quantity="other">Выполнено %d задач</item>
+        <item quantity="one">%d task completed</item>
+        <item quantity="other">%d tasks completed</item>
+    </plurals>
+
+    <plurals name="deleted_task_count">
+        <item quantity="one">%d task deleted</item>
+        <item quantity="other">%d tasks deleted</item>
     </plurals>
 
     <string-array name="task_priorities">

@@ -10,14 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
+import com.google.android.material.snackbar.Snackbar
 import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.TooDooApplication
 import com.yaroslavgamayunov.toodoo.databinding.FragmentMainPageBinding
-import com.yaroslavgamayunov.toodoo.domain.common.Result
+import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.MainPageViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
 import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,28 +30,9 @@ class MainPageFragment : Fragment() {
     private var binding: FragmentMainPageBinding? = null
     private lateinit var taskAdapter: TaskAdapter
 
-
-    private var taskCollectingJob: Job? = null
-    private var isShowingCompletedTasks = false
-        set(value) {
-            taskCollectingJob?.cancel()
-            if (view != null) {
-                taskCollectingJob = collectTasks(value)
-            }
-            field = value
-        }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireActivity().application as TooDooApplication).viewModelComponent.inject(this)
-        isShowingCompletedTasks =
-            savedInstanceState?.getBoolean(SHOW_COMPLETED_TAG, false) ?: false
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(SHOW_COMPLETED_TAG, isShowingCompletedTasks)
     }
 
     override fun onCreateView(
@@ -70,13 +51,14 @@ class MainPageFragment : Fragment() {
         binding = FragmentMainPageBinding.bind(view)
         setupTaskList()
         setupHeader()
+        setupSnackbar()
 
         binding!!.apply {
             addTaskFab.setOnClickListener {
                 findNavController().navigate(R.id.action_mainPageFragment_to_taskEditFragment)
             }
             showCompletedTasksImageView.setOnClickListener {
-                if (isShowingCompletedTasks) {
+                if (mainPageViewModel.isShowingCompletedTasks) {
                     (it as ImageView).setImageDrawable(
                         it.context.getDrawableCompat(
                             R.drawable.ic_visibility
@@ -89,23 +71,13 @@ class MainPageFragment : Fragment() {
                         )
                     )
                 }
-                isShowingCompletedTasks = !isShowingCompletedTasks
+                mainPageViewModel.isShowingCompletedTasks =
+                    !mainPageViewModel.isShowingCompletedTasks
             }
+
             mainPageAppbarLayout.setOnClickListener {
                 mainPageScrollView.smoothScrollTo(0, 0)
                 mainPageAppbarLayout.setExpanded(true)
-            }
-        }
-    }
-
-
-    private fun collectTasks(showingCompleted: Boolean): Job {
-        return viewLifecycleOwner.lifecycleScope.launch {
-            val result = mainPageViewModel.tasks(showingCompleted)
-            if (result is Result.Success) {
-                result.data.collect {
-                    taskAdapter.submitList(it)
-                }
             }
         }
     }
@@ -114,16 +86,17 @@ class MainPageFragment : Fragment() {
         taskAdapter =
             TaskAdapter(
                 onTaskCheck = {
-                    lifecycleScope.launch {
-                        mainPageViewModel.completeTask(it, it.isCompleted.not())
-                    }
+                    mainPageViewModel.completeTask(it, it.isCompleted.not())
                 },
                 onTaskDelete = { task ->
-                    lifecycleScope.launch {
-                        mainPageViewModel.deleteTask(task)
-                    }
+                    mainPageViewModel.deleteTask(task)
                 },
-                onTaskEdit = {})
+                onTaskEdit = { task ->
+                    val action =
+                        MainPageFragmentDirections
+                            .actionMainPageFragmentToTaskEditFragment(taskId = task.taskId)
+                    findNavController().navigate(action)
+                })
 
         binding?.apply {
             taskRecyclerView.adapter = taskAdapter
@@ -132,15 +105,19 @@ class MainPageFragment : Fragment() {
                 attachToRecyclerView(taskRecyclerView)
             }
         }
-
-        taskCollectingJob = collectTasks(isShowingCompletedTasks)
+        viewLifecycleOwner.lifecycleScope.launch {
+            mainPageViewModel.tasks.collect {
+                it.doIfSuccess { data ->
+                    taskAdapter.submitList(data)
+                }
+            }
+        }
     }
 
     private fun setupHeader() {
         viewLifecycleOwner.lifecycleScope.launch {
-            val result = mainPageViewModel.getNumberOfCompletedTasks()
-            if (result is Result.Success) {
-                result.data.collect {
+            mainPageViewModel.completedTaskCount.collect { result ->
+                result.doIfSuccess {
                     binding!!.completedTaskCountTextView.text =
                         requireActivity().resources.getQuantityString(
                             R.plurals.completed_task_count,
@@ -152,8 +129,32 @@ class MainPageFragment : Fragment() {
         }
     }
 
+    private fun setupSnackbar() {
+        val snackbar: Snackbar by lazy {
+            Snackbar.make(
+                binding!!.mainPageCoordinatorLayout,
+                "",
+                Snackbar.LENGTH_INDEFINITE
+            ).setAction(R.string.undo) {
+                mainPageViewModel.undoDeletedTasks()
+            }
+        }
 
-    companion object {
-        private const val SHOW_COMPLETED_TAG = "SHOW_COMPLETED"
+        viewLifecycleOwner.lifecycleScope.launch {
+            mainPageViewModel.deletionUndoCount.collect {
+                if (it == 0) {
+                    snackbar.dismiss()
+                } else {
+                    snackbar.setText(
+                        requireActivity().resources.getQuantityString(
+                            R.plurals.deleted_task_count,
+                            it,
+                            it
+                        )
+                    )
+                    snackbar.show()
+                }
+            }
+        }
     }
 }

@@ -7,3 +7,9 @@ sealed class Result<out R> {
     data class Error(val e: Exception) : Result<Nothing>()
     object Loading : Result<Nothing>()
 }
+
+inline fun <T> Result<T>.doIfSuccess(block: (T) -> Unit) {
+    if (this is Result.Success) {
+        block(this.data)
+    }
+}

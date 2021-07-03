@@ -2,8 +2,11 @@ package com.yaroslavgamayunov.toodoo.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yaroslavgamayunov.toodoo.domain.*
+import com.yaroslavgamayunov.toodoo.domain.AddTasksUseCase
+import com.yaroslavgamayunov.toodoo.domain.DeleteTaskUseCase
+import com.yaroslavgamayunov.toodoo.domain.GetSingleTaskByIdUseCase
 import com.yaroslavgamayunov.toodoo.domain.common.Result
+import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
@@ -14,7 +17,7 @@ import java.time.Instant
 import javax.inject.Inject
 
 class TaskEditViewModel @Inject constructor(
-    private val addTaskUseCase: AddTaskUseCase,
+    private val addTasksUseCase: AddTasksUseCase,
     private val getSingleTaskByIdUseCase: GetSingleTaskByIdUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase
 ) : ViewModel() {
@@ -32,12 +35,12 @@ class TaskEditViewModel @Inject constructor(
 
     val task get() = _editableTask.asStateFlow()
 
-    suspend fun getTask(id: Int): Result<Task> {
-        val result = getSingleTaskByIdUseCase(id)
-        if (result is Result.Success) {
-            _editableTask.value = result.data
+    fun loadTaskForEditing(id: Int) {
+        viewModelScope.launch {
+            getSingleTaskByIdUseCase(id).doIfSuccess {
+                _editableTask.value = it
+            }
         }
-        return result
     }
 
     fun updateDescription(description: String) {
@@ -61,8 +64,8 @@ class TaskEditViewModel @Inject constructor(
         }
     }
 
-    suspend fun saveChanges() {
-        addTaskUseCase(_editableTask.value)
+    fun saveChanges() {
+        viewModelScope.launch { addTasksUseCase(listOf(_editableTask.value)) }
     }
 
     fun deleteTask() {

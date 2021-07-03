@@ -9,9 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.yaroslavgamayunov.toodoo.R
@@ -40,7 +42,7 @@ class TaskEditFragment : Fragment() {
     private val taskEditViewModel: TaskEditViewModel by viewModels { viewModelFactory }
 
     private var binding: FragmentTaskEditBinding? = null
-
+    val args: TaskEditFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,9 +62,11 @@ class TaskEditFragment : Fragment() {
             priorityPicker.setOnClickListener {
                 showPriorityMenu()
             }
+
             dateTimePicker.setOnClickListener {
                 showDatePicker()
             }
+
             taskTimeSwitch.setOnClickListener {
                 if (taskTimeSwitch.isChecked) {
                     showDatePicker()
@@ -74,12 +78,17 @@ class TaskEditFragment : Fragment() {
             taskDescriptionEditText.addTextChangedListener {
                 taskEditViewModel.updateDescription(it.toString())
             }
+
+            taskDeleteButton.setOnClickListener {
+                showTaskDeletionDialog()
+            }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             taskEditViewModel.task.collect {
                 updateLayout(it)
             }
         }
+        if (args.taskId != -1) taskEditViewModel.loadTaskForEditing(args.taskId)
         setupToolbar()
     }
 
@@ -192,5 +201,21 @@ class TaskEditFragment : Fragment() {
                 findNavController().navigateUp()
             }
         }
+    }
+
+    private fun deleteCurrentTask() {
+        if (args.taskId != -1) {
+            taskEditViewModel.deleteTask()
+        }
+        findNavController().navigateUp()
+    }
+
+    private fun showTaskDeletionDialog() {
+        val builder = MaterialAlertDialogBuilder(requireActivity())
+        builder
+            .setMessage(R.string.task_deletion_dialog_title)
+            .setPositiveButton(R.string.delete) { _, _ -> deleteCurrentTask() }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+        builder.create().show()
     }
 }

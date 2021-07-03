@@ -15,10 +15,21 @@
     <string name="priority_none">Нет</string>
     <string name="datepicker_title">Выберите дату</string>
     <string name="timepicker_title">Выберите время</string>
+    <string name="undo">Отменить</string>
+    <string name="task_deletion_dialog_title">Удалить задачу?</string>
+    <string name="cancel">Отмена</string>
+
     <plurals name="completed_task_count">
         <item quantity="one">Выполнена %d задача</item>
         <item quantity="few">Выполнено %d задачи</item>
         <item quantity="many">Выполнено %d задач</item>
         <item quantity="other">Выполнено %d задач</item>
+    </plurals>
+
+    <plurals name="deleted_task_count">
+        <item quantity="one">Удалена %d задача</item>
+        <item quantity="few">Удалено %d задачи</item>
+        <item quantity="many">Удалено %d задач</item>
+        <item quantity="other">Удалено %d задач</item>
     </plurals>
 </resources>

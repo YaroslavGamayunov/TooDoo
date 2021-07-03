@@ -18,5 +18,10 @@
         android:id="@+id/taskEditFragment"
         android:name="com.yaroslavgamayunov.toodoo.ui.TaskEditFragment"
         android:label="fragment_task_edit"
-        tools:layout="@layout/fragment_task_edit" />
+        tools:layout="@layout/fragment_task_edit" >
+        <argument
+            android:name="taskId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
 </navigation>

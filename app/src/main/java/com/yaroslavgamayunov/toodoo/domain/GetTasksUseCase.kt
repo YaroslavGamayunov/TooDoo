@@ -3,7 +3,8 @@ package com.yaroslavgamayunov.toodoo.domain
 import com.yaroslavgamayunov.toodoo.data.TaskRepository
 import com.yaroslavgamayunov.toodoo.data.db.TaskEntity
 import com.yaroslavgamayunov.toodoo.data.mappers.toTask
-import com.yaroslavgamayunov.toodoo.domain.common.UseCase
+import com.yaroslavgamayunov.toodoo.domain.common.FlowUseCase
+import com.yaroslavgamayunov.toodoo.domain.common.Result
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -16,24 +17,28 @@ data class GetTasksUseCaseParams(
     val currentlyCompletedTaskIds: Set<Int>
 )
 
+private typealias TaskEntityListMapper = suspend (List<TaskEntity>) -> (List<Task>)
+
 class GetTasksUseCase @Inject constructor(
     dispatcher: CoroutineDispatcher,
     private val taskRepository: TaskRepository
-) : UseCase<GetTasksUseCaseParams, Flow<List<Task>>>(dispatcher) {
-    override suspend fun execute(params: GetTasksUseCaseParams): Flow<List<Task>> {
+) : FlowUseCase<GetTasksUseCaseParams, List<Task>>(dispatcher) {
+    override fun execute(params: GetTasksUseCaseParams): Flow<Result<List<Task>>> {
         return taskRepository.getAllTasks()
-            .map(mapTaskFlow(params))
+            .map(removeNotNeeded(params))
+            .map { Result.Success(it) }
     }
 
-    private fun mapTaskFlow(params: GetTasksUseCaseParams): suspend (List<TaskEntity>) -> (List<Task>) {
+    private fun removeNotNeeded(params: GetTasksUseCaseParams): TaskEntityListMapper {
         return { list ->
             list
-                .map {
-                    it.toTask()
-                }
-                .filter { task ->
-                    params.showCompletedTasks || (!task.isCompleted || task.taskId in params.currentlyCompletedTaskIds)
-                }
+                .map { it.toTask() }
+                .filter { isNeededToBeShown(it, params) }
         }
+    }
+
+    private fun isNeededToBeShown(task: Task, params: GetTasksUseCaseParams): Boolean {
+        return params.showCompletedTasks ||
+                (!task.isCompleted || task.taskId in params.currentlyCompletedTaskIds)
     }
 }

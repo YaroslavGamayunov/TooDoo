@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="TooDoo.PopupMenu" parent="@android:style/Widget.PopupMenu">
+    <style name="Widget.TooDoo.PopupMenu" parent="@android:style/Widget.PopupMenu">
         <item name="android:popupBackground">?attr/tooDooElevated</item>
     </style>
 
@@ -17,6 +17,33 @@
 
     <style name="Widget.TooDoo.Toolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
         <item name="actionMenuTextColor">?attr/tooDooBlue</item>
+    </style>
+
+    <style name="Widget.TooDoo.Snackbar.Button" parent="@style/Widget.MaterialComponents.Button.TextButton.Snackbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.TooDoo.Snackbar.Button</item>
+    </style>
+
+    <style name="ThemeOverlay.TooDoo.Snackbar.Button" parent="">
+        <item name="colorPrimary">?attr/tooDooBlue</item>
+    </style>
+
+
+    <style name="ThemeOverlay.TooDoo.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="buttonBarNegativeButtonStyle">
+            @style/Widget.TooDoo.MaterialAlertDialog.Button
+        </item>
+        <item name="buttonBarPositiveButtonStyle">
+            @style/Widget.TooDoo.MaterialAlertDialog.Button
+        </item>
+    </style>
+
+    <style name="Widget.TooDoo.MaterialAlertDialog.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.TooDoo.MaterialAlertDialog.Button
+        </item>
+    </style>
+
+    <style name="ThemeOverlay.TooDoo.MaterialAlertDialog.Button" parent="">
+        <item name="colorPrimary">?attr/tooDooBlue</item>
     </style>
 
     <style name="ThemeOverlay.TooDoo.MaterialCalendar" parent="@style/ThemeOverlay.MaterialComponents.MaterialCalendar">
