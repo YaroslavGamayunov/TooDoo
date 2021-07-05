@@ -2,6 +2,7 @@ package com.yaroslavgamayunov.toodoo.data.db
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import java.time.Instant
 
 @Dao
 @Entity
@@ -24,6 +25,10 @@ interface TaskDao {
     @Query("UPDATE tasks SET completed = :completed WHERE task_id = :taskId")
     suspend fun setCompleted(taskId: Int, completed: Boolean)
 
-    @Query("SELECT COUNT(task_id) FROM tasks WHERE completed = 1")
-    fun getNumberOfCompleted(): Flow<Int>
+    @Query("SELECT COUNT(task_id) FROM tasks WHERE completed = :completed AND deadline >= :minDeadlineTime AND deadline < :maxDeadlineTime")
+    fun getCountOfTasks(
+        completed: Boolean,
+        minDeadlineTime: Instant = Instant.MIN,
+        maxDeadlineTime: Instant = Instant.MAX
+    ): Flow<Int>
 }

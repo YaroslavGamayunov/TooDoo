@@ -24,13 +24,14 @@ import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TaskEditViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
-import com.yaroslavgamayunov.toodoo.util.formatDate
 import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
 import com.yaroslavgamayunov.toodoo.util.getColoredText
+import com.yaroslavgamayunov.toodoo.util.localToZonedDateTime
+import com.yaroslavgamayunov.toodoo.util.simpleFormat
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.time.Instant
+import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
@@ -42,11 +43,11 @@ class TaskEditFragment : Fragment() {
     private val taskEditViewModel: TaskEditViewModel by viewModels { viewModelFactory }
 
     private var binding: FragmentTaskEditBinding? = null
-    val args: TaskEditFragmentArgs by navArgs()
+    private val args: TaskEditFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity().application as TooDooApplication).viewModelComponent.inject(this)
+        (requireActivity().application as TooDooApplication).appComponent.inject(this)
     }
 
     override fun onCreateView(
@@ -101,7 +102,7 @@ class TaskEditFragment : Fragment() {
 
             taskDeadlineTextView.text =
                 if (task.scheduleMode == TaskScheduleMode.Unspecified) ""
-                else task.deadline.formatDate(
+                else task.deadline.simpleFormat(
                     showTime = task.scheduleMode == TaskScheduleMode.ExactTime
                 )
 
@@ -156,16 +157,17 @@ class TaskEditFragment : Fragment() {
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .build()
         datePicker.addOnPositiveButtonClickListener { time ->
-            taskEditViewModel.updateDeadline(Instant.ofEpochMilli(time))
+            val zonedDateTime = (time / 1000).localToZonedDateTime()
+            taskEditViewModel.updateDeadline(zonedDateTime)
             taskEditViewModel.updateScheduleMode(TaskScheduleMode.NotExactTime)
 
-            showTimePicker(Instant.ofEpochMilli(time))
+            showTimePicker(zonedDateTime)
         }
 
         datePicker.show(childFragmentManager, null)
     }
 
-    private fun showTimePicker(date: Instant) {
+    private fun showTimePicker(date: ZonedDateTime) {
         val picker =
             MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_24H)

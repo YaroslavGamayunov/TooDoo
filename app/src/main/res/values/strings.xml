@@ -19,6 +19,9 @@
     <string name="task_deletion_dialog_title">Delete the task?</string>
     <string name="cancel">Cancel</string>
 
+    <string name="daily_tasks_notification_channel_title">Morning notification of oncoming tasks</string>
+    <string name="daily_tasks_notification_title">Daily tasks</string>
+
     <plurals name="completed_task_count">
         <item quantity="one">%d task completed</item>
         <item quantity="other">%d tasks completed</item>
@@ -28,6 +31,12 @@
         <item quantity="one">%d task deleted</item>
         <item quantity="other">%d tasks deleted</item>
     </plurals>
+
+    <plurals name="dont_forget_to_complete_tasks">
+        <item quantity="one">You have %d task for today, don`t forget!</item>
+        <item quantity="other">You have %d tasks for today, don`t forget!</item>
+    </plurals>
+
 
     <string-array name="task_priorities">
         <item>@string/priority_none</item>

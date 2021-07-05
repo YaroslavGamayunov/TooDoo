@@ -32,7 +32,7 @@ class MainPageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity().application as TooDooApplication).viewModelComponent.inject(this)
+        (requireActivity().application as TooDooApplication).appComponent.inject(this)
     }
 
     override fun onCreateView(

@@ -14,6 +14,7 @@ object Versions {
     const val COORDINATOR_LAYOUT = "1.1.0"
     const val FRAGMENT = "1.3.4"
     const val NAVIGATION = "2.3.5"
+    const val WORK = "2.5.0"
 
     const val ROOM = "2.3.0"
     const val DAGGER = "2.36"
@@ -56,6 +57,7 @@ object Dependencies {
         const val NAVIGATION_UI_KTX =
             "androidx.navigation:navigation-ui-ktx:${Versions.NAVIGATION}"
 
+        const val WORK = "androidx.work:work-runtime-ktx:${Versions.WORK}"
     }
 
     object DI {

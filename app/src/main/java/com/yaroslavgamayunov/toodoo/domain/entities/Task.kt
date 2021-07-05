@@ -1,7 +1,6 @@
 package com.yaroslavgamayunov.toodoo.domain.entities
 
-import androidx.room.ColumnInfo
-import java.time.Instant
+import java.time.ZonedDateTime
 
 enum class TaskPriority(val level: Int) {
     None(0),
@@ -19,7 +18,7 @@ data class Task(
     val taskId: Int,
     val description: String,
     val isCompleted: Boolean,
-    val deadline: Instant,
+    val deadline: ZonedDateTime,
     val scheduleMode: TaskScheduleMode,
     val priority: TaskPriority
 )

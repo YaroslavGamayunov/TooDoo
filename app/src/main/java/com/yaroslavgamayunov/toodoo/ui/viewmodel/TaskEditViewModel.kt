@@ -5,15 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.yaroslavgamayunov.toodoo.domain.AddTasksUseCase
 import com.yaroslavgamayunov.toodoo.domain.DeleteTaskUseCase
 import com.yaroslavgamayunov.toodoo.domain.GetSingleTaskByIdUseCase
-import com.yaroslavgamayunov.toodoo.domain.common.Result
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
+import com.yaroslavgamayunov.toodoo.util.TimeUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.Instant
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class TaskEditViewModel @Inject constructor(
@@ -27,7 +27,7 @@ class TaskEditViewModel @Inject constructor(
             taskId = 0,
             description = "",
             isCompleted = false,
-            deadline = Instant.MAX,
+            deadline = TimeUtils.maxZonedDateTime,
             scheduleMode = TaskScheduleMode.Unspecified,
             priority = TaskPriority.None
         )
@@ -51,7 +51,7 @@ class TaskEditViewModel @Inject constructor(
         _editableTask.value = _editableTask.value.copy(priority = priority)
     }
 
-    fun updateDeadline(deadline: Instant) {
+    fun updateDeadline(deadline: ZonedDateTime) {
         _editableTask.value = _editableTask.value.copy(deadline = deadline)
     }
 
@@ -59,7 +59,7 @@ class TaskEditViewModel @Inject constructor(
         _editableTask.let {
             it.value = if (scheduleMode == TaskScheduleMode.Unspecified) it.value.copy(
                 scheduleMode = scheduleMode,
-                deadline = Instant.MAX
+                deadline = TimeUtils.maxZonedDateTime
             ) else it.value.copy(scheduleMode = scheduleMode)
         }
     }

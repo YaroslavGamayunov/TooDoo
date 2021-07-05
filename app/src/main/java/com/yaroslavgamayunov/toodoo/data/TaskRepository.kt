@@ -6,6 +6,8 @@ import com.yaroslavgamayunov.toodoo.data.db.TaskEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -13,8 +15,9 @@ interface TaskRepository {
     fun getAllTasks(): Flow<List<TaskEntity>>
     suspend fun getTask(id: Int): TaskEntity
     fun getCompletedTasks(): Flow<List<TaskEntity>>
-    fun getNumberOfCompletedTasks(): Flow<Int>
+    fun getCountOfCompletedTasks(): Flow<Int>
     fun getUncompletedTasks(): Flow<List<TaskEntity>>
+    fun getCountOfDailyTasks(): Flow<Int>
 
     suspend fun setCompleted(task: TaskEntity, isCompleted: Boolean)
     suspend fun insertTasks(tasks: List<TaskEntity>)
@@ -34,12 +37,23 @@ class DefaultTaskRepository @Inject constructor(
     override fun getCompletedTasks(): Flow<List<TaskEntity>> =
         taskDao.getAll(completed = true)
 
-    override fun getNumberOfCompletedTasks(): Flow<Int> {
-        return taskDao.getNumberOfCompleted()
+    override fun getCountOfCompletedTasks(): Flow<Int> {
+        return taskDao.getCountOfTasks(completed = true)
     }
 
     override fun getUncompletedTasks(): Flow<List<TaskEntity>> =
         taskDao.getAll(completed = false)
+
+    override fun getCountOfDailyTasks(): Flow<Int> {
+        val currentDayStart = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).toInstant()
+        val currentDayEnd = currentDayStart.plus(1, ChronoUnit.DAYS)
+
+        return taskDao.getCountOfTasks(
+            completed = false,
+            minDeadlineTime = currentDayStart,
+            maxDeadlineTime = currentDayEnd
+        )
+    }
 
     override suspend fun setCompleted(task: TaskEntity, isCompleted: Boolean) {
         applicationCoroutineScope.launch {

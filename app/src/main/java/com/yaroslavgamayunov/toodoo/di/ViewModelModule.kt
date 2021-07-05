@@ -11,12 +11,8 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import kotlin.reflect.KClass
 
-@Target(
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER
-)
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
 @MapKey
 internal annotation class ViewModelKey(val key: KClass<out ViewModel>)
 

@@ -68,6 +68,8 @@ dependencies {
     implementation(Dependencies.Android.NAVIGATION_UI_KTX)
     implementation(Dependencies.Android.NAVIGATION_FRAGMENT_KTX)
 
+    implementation(Dependencies.Android.WORK)
+
     // DI
     implementation(Dependencies.DI.DAGGER)
     kapt(Dependencies.DI.DAGGER_COMPILER)

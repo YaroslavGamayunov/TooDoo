@@ -14,11 +14,11 @@ import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
-import com.yaroslavgamayunov.toodoo.util.formatDate
+import com.yaroslavgamayunov.toodoo.util.simpleFormat
 import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
 import com.yaroslavgamayunov.toodoo.util.getColorStateListCompat
 import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
-import java.time.Instant
+import java.time.ZonedDateTime
 
 class TaskAdapter(
     private val onTaskCheck: (Task) -> Unit,
@@ -87,12 +87,12 @@ class TaskAdapter(
                 taskDeadlineTextView.visibility = View.GONE
             } else {
                 taskDeadlineTextView.visibility = View.VISIBLE
-                taskDeadlineTextView.text = task.deadline.formatDate(
+                taskDeadlineTextView.text = task.deadline.simpleFormat(
                     showTime = task.scheduleMode == TaskScheduleMode.ExactTime
                 )
             }
 
-            checkBox.buttonTintList = if (task.deadline.isBefore(Instant.now())) {
+            checkBox.buttonTintList = if (task.deadline.isBefore(ZonedDateTime.now())) {
                 itemView.context.getColorStateListCompat(R.color.checkbox_button_tint_outdated)
             } else {
                 itemView.context.getColorStateListCompat(R.color.checkbox_button_tint_normal)

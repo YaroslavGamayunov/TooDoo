@@ -2,16 +2,17 @@ package com.yaroslavgamayunov.toodoo.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yaroslavgamayunov.toodoo.GetCountOfCompletedTasksUseCase
 import com.yaroslavgamayunov.toodoo.domain.*
 import com.yaroslavgamayunov.toodoo.domain.common.Result
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
-import com.yaroslavgamayunov.toodoo.util.notifyObservers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +23,7 @@ class MainPageViewModel @Inject constructor(
     private val addTasksUseCase: AddTasksUseCase,
     getCountOfCompletedTasksUseCase: GetCountOfCompletedTasksUseCase
 ) : ViewModel() {
-    private val deletionUndoList = MutableStateFlow<MutableList<Task>>(mutableListOf())
+    private val deletionUndoList = MutableStateFlow<List<Task>>(listOf())
     val deletionUndoCount = deletionUndoList.map { it.size }
 
     private var deletionUndoListCleaningJob: Job? = null
@@ -68,8 +69,7 @@ class MainPageViewModel @Inject constructor(
                 }
 
                 deletionUndoList.apply {
-                    value.add(task)
-                    notifyObservers()
+                    value = value.toMutableList().apply { add(task) }
                 }
             }
         }
