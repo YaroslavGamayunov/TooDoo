@@ -3,7 +3,6 @@ package com.yaroslavgamayunov.toodoo
 import android.app.Application
 import androidx.work.Configuration
 import com.yaroslavgamayunov.toodoo.di.AppComponent
-import com.yaroslavgamayunov.toodoo.di.AppModule
 import com.yaroslavgamayunov.toodoo.di.DaggerAppComponent
 import com.yaroslavgamayunov.toodoo.work.MorningNotificationWorker
 import com.yaroslavgamayunov.toodoo.work.TooDooWorkerFactory
@@ -11,9 +10,7 @@ import javax.inject.Inject
 
 class TooDooApplication : Application(), Configuration.Provider {
     val appComponent: AppComponent by lazy {
-        DaggerAppComponent.builder()
-            .appModule(AppModule(this))
-            .build()
+        DaggerAppComponent.factory().create(this)
     }
 
     @Inject

@@ -3,13 +3,13 @@ package com.yaroslavgamayunov.toodoo.data
 import com.yaroslavgamayunov.toodoo.data.db.TaskDao
 import com.yaroslavgamayunov.toodoo.data.db.TaskDatabase
 import com.yaroslavgamayunov.toodoo.data.db.TaskEntity
+import com.yaroslavgamayunov.toodoo.di.ApplicationCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
-import javax.inject.Named
 
 interface TaskRepository {
     fun getAllTasks(): Flow<List<TaskEntity>>
@@ -26,7 +26,7 @@ interface TaskRepository {
 
 class DefaultTaskRepository @Inject constructor(
     database: TaskDatabase,
-    @Named("applicationCoroutineScope")
+    @ApplicationCoroutineScope
     val applicationCoroutineScope: CoroutineScope
 ) : TaskRepository {
     private val taskDao: TaskDao = database.taskDao()

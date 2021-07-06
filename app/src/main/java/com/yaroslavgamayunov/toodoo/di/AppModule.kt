@@ -1,20 +1,15 @@
 package com.yaroslavgamayunov.toodoo.di
 
-import com.yaroslavgamayunov.toodoo.TooDooApplication
+import android.content.Context
 import com.yaroslavgamayunov.toodoo.data.db.TaskDatabase
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 @Module
-class AppModule(private val application: TooDooApplication) {
-    @Singleton
+class AppModule {
+    @ApplicationScoped
     @Provides
-    fun provideApplication(): TooDooApplication = application
-
-    @Singleton
-    @Provides
-    fun provideTaskDatabase(): TaskDatabase {
-        return TaskDatabase.build(application)
+    fun provideTaskDatabase(context: Context): TaskDatabase {
+        return TaskDatabase.build(context)
     }
 }

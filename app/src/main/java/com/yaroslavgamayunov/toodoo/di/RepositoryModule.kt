@@ -4,12 +4,10 @@ import com.yaroslavgamayunov.toodoo.data.DefaultTaskRepository
 import com.yaroslavgamayunov.toodoo.data.TaskRepository
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
 
 @Module(includes = [AppModule::class, CoroutineModule::class])
 abstract class RepositoryModule {
-    @Singleton
+    @ApplicationScoped
     @Binds
     abstract fun bindTaskRepository(repository: DefaultTaskRepository): TaskRepository
 }

@@ -1,16 +1,15 @@
 package com.yaroslavgamayunov.toodoo.di
 
+import android.content.Context
 import com.yaroslavgamayunov.toodoo.TooDooApplication
-import com.yaroslavgamayunov.toodoo.data.db.TaskDatabase
 import com.yaroslavgamayunov.toodoo.ui.MainActivity
 import com.yaroslavgamayunov.toodoo.ui.TaskEditFragment
 import com.yaroslavgamayunov.toodoo.ui.mainpage.MainPageFragment
 import dagger.BindsInstance
 import dagger.Component
-import javax.inject.Singleton
 
 
-@Singleton
+@ApplicationScoped
 @Component(
     modules = [
         AppModule::class,
@@ -19,6 +18,11 @@ import javax.inject.Singleton
     ]
 )
 interface AppComponent {
+    @Component.Factory
+    interface Builder {
+        fun create(@BindsInstance context: Context): AppComponent
+    }
+
     fun inject(application: TooDooApplication)
     fun inject(activity: MainActivity)
     fun inject(fragment: MainPageFragment)
