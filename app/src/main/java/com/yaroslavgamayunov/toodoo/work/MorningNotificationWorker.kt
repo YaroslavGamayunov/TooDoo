@@ -18,9 +18,10 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import com.yaroslavgamayunov.toodoo.domain.common.Result as UseCaseResult
 
-class MorningNotificationWorker(
+class MorningNotificationWorker @Inject constructor(
     context: Context,
     workerParameters: WorkerParameters,
     val getCountOfDailyTasksUseCase: GetCountOfDailyTasksUseCase

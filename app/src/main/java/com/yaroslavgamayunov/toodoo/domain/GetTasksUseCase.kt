@@ -3,6 +3,7 @@ package com.yaroslavgamayunov.toodoo.domain
 import com.yaroslavgamayunov.toodoo.data.TaskRepository
 import com.yaroslavgamayunov.toodoo.data.db.TaskEntity
 import com.yaroslavgamayunov.toodoo.data.mappers.toTask
+import com.yaroslavgamayunov.toodoo.di.IoDispatcher
 import com.yaroslavgamayunov.toodoo.domain.common.FlowUseCase
 import com.yaroslavgamayunov.toodoo.domain.common.Result
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
@@ -20,6 +21,7 @@ data class GetTasksUseCaseParams(
 private typealias TaskEntityListMapper = suspend (List<TaskEntity>) -> (List<Task>)
 
 class GetTasksUseCase @Inject constructor(
+    @IoDispatcher
     dispatcher: CoroutineDispatcher,
     private val taskRepository: TaskRepository
 ) : FlowUseCase<GetTasksUseCaseParams, List<Task>>(dispatcher) {

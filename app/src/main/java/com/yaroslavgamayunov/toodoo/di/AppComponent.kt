@@ -13,6 +13,7 @@ import dagger.Component
 @Component(
     modules = [
         AppModule::class,
+        RepositoryModule::class,
         ViewModelModule::class,
         WorkerModule::class
     ]
