@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -22,6 +21,7 @@ import com.yaroslavgamayunov.toodoo.databinding.FragmentTaskEditBinding
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
+import com.yaroslavgamayunov.toodoo.ui.base.BaseFragment
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TaskEditViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
 import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
@@ -36,7 +36,7 @@ import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 
-class TaskEditFragment : Fragment() {
+class TaskEditFragment : BaseFragment() {
 
     @Inject
     lateinit var viewModelFactory: TooDooViewModelFactory
@@ -115,7 +115,7 @@ class TaskEditFragment : Fragment() {
 
 
     private fun showPriorityMenu() {
-        (requireActivity() as MainActivity).showMenu(
+        showMenu(
             binding!!.priorityTextView,
             R.menu.menu_task_priority,
             onMenuInflated = { popupMenu ->

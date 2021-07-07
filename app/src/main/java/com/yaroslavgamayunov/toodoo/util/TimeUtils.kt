@@ -17,9 +17,9 @@ object TimeUtils {
             ZoneId.systemDefault()
         )
 
-
     /**
-     *  Returns the closest moment in future relatively to [Instant.now] when time of day equals to [timeOfDay],
+     *  Returns the closest moment in future relatively to [Instant.now]
+     *  when time of day equals to [timeOfDay]
      */
     fun getClosestTimeOfDay(timeOfDay: LocalTime): Instant {
         val currentTime = ZonedDateTime.now().toLocalTime()
