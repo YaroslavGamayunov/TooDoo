@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.TooDooApplication
 import com.yaroslavgamayunov.toodoo.databinding.FragmentMainPageBinding
@@ -33,6 +34,9 @@ class MainPageFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireActivity().application as TooDooApplication).appComponent.inject(this)
+
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
     }
 
     override fun onCreateView(

@@ -15,6 +15,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.TooDooApplication
 import com.yaroslavgamayunov.toodoo.databinding.FragmentTaskEditBinding
@@ -48,6 +49,9 @@ class TaskEditFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireActivity().application as TooDooApplication).appComponent.inject(this)
+
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
     }
 
     override fun onCreateView(
