@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
-import com.yaroslavgamayunov.toodoo.data.model.TaskScheduleMode
 import java.time.Instant
 
 @Entity(tableName = "tasks")
@@ -20,7 +19,5 @@ data class TaskRoomEntity(
     val createdAt: Instant,
     @ColumnInfo(name = "updated_at")
     val updatedAt: Instant,
-    @ColumnInfo(name = "schedule_mode")
-    val scheduleMode: TaskScheduleMode,
     val priority: TaskPriority
 )

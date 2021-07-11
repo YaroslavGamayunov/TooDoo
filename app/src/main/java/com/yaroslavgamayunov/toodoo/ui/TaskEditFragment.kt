@@ -19,9 +19,9 @@ import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.TooDooApplication
 import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
-import com.yaroslavgamayunov.toodoo.data.model.TaskScheduleMode
 import com.yaroslavgamayunov.toodoo.databinding.FragmentTaskEditBinding
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
+import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
 import com.yaroslavgamayunov.toodoo.ui.base.BaseFragment
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TaskEditViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
@@ -109,7 +109,7 @@ class TaskEditFragment : BaseFragment() {
             taskDeadlineTextView.text =
                 if (task.scheduleMode == TaskScheduleMode.Unspecified) ""
                 else task.deadline.simpleFormat(
-                    showTime = task.scheduleMode == TaskScheduleMode.ExactTime
+                    showTime = task.scheduleMode == TaskScheduleMode.ByTime
                 )
 
             val priorities = requireActivity().resources.getStringArray(R.array.task_priorities)
@@ -165,7 +165,7 @@ class TaskEditFragment : BaseFragment() {
         datePicker.addOnPositiveButtonClickListener { time ->
             val zonedDateTime = (time / 1000).localToZonedDateTime()
             taskEditViewModel.updateDeadline(zonedDateTime)
-            taskEditViewModel.updateScheduleMode(TaskScheduleMode.NotExactTime)
+            taskEditViewModel.updateScheduleMode(TaskScheduleMode.ByDate)
 
             showTimePicker(zonedDateTime)
         }
@@ -186,7 +186,7 @@ class TaskEditFragment : BaseFragment() {
                 .plus(picker.minute.toLong(), ChronoUnit.MINUTES)
 
             taskEditViewModel.updateDeadline(selectedDateAndTime)
-            taskEditViewModel.updateScheduleMode(TaskScheduleMode.ExactTime)
+            taskEditViewModel.updateScheduleMode(TaskScheduleMode.ByTime)
         }
 
         picker.show(childFragmentManager, null)

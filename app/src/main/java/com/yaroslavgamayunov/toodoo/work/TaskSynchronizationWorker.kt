@@ -9,10 +9,9 @@ import androidx.core.content.getSystemService
 import androidx.work.*
 import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.domain.SynchronizeTasksUseCase
-import com.yaroslavgamayunov.toodoo.domain.common.Result as UseCaseResult
 import com.yaroslavgamayunov.toodoo.util.createNotificationChannel
 import java.time.Duration
-import java.util.concurrent.TimeUnit
+import com.yaroslavgamayunov.toodoo.domain.common.Result as UseCaseResult
 
 class TaskSynchronizationWorker(
     context: Context,
@@ -63,7 +62,6 @@ class TaskSynchronizationWorker(
             val request =
                 PeriodicWorkRequestBuilder<TaskSynchronizationWorker>(synchronizationPeriod)
                     .addTag(WORKER_TAG)
-                    .setInitialDelay(synchronizationPeriod.seconds, TimeUnit.SECONDS)
                     .setConstraints(constraints)
                     .build()
 

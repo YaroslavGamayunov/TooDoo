@@ -1,7 +1,6 @@
 package com.yaroslavgamayunov.toodoo.domain.entities
 
 import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
-import com.yaroslavgamayunov.toodoo.data.model.TaskScheduleMode
 import java.time.ZonedDateTime
 
 data class Task(
@@ -12,3 +11,9 @@ data class Task(
     val scheduleMode: TaskScheduleMode,
     val priority: TaskPriority
 )
+
+enum class TaskScheduleMode {
+    ByTime,
+    ByDate,
+    Unspecified
+}

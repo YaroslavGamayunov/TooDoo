@@ -10,7 +10,6 @@ import androidx.room.TypeConverters
 @TypeConverters(
     TimeConverter::class,
     PriorityConverter::class,
-    ScheduleModeConverter::class
 )
 abstract class TaskDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
@@ -21,7 +20,6 @@ abstract class TaskDatabase : RoomDatabase() {
             return Room.databaseBuilder(context, TaskDatabase::class.java, name)
                 .addTypeConverter(TimeConverter())
                 .addTypeConverter(PriorityConverter())
-                .addTypeConverter(ScheduleModeConverter())
                 .fallbackToDestructiveMigration().build()
         }
     }

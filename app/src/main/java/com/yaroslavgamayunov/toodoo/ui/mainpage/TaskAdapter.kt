@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.yaroslavgamayunov.toodoo.R
 import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
-import com.yaroslavgamayunov.toodoo.data.model.TaskScheduleMode
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
+import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
 import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
 import com.yaroslavgamayunov.toodoo.util.getColorStateListCompat
 import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
@@ -90,7 +90,7 @@ class TaskAdapter(
             } else {
                 taskDeadlineTextView.visibility = View.VISIBLE
                 taskDeadlineTextView.text = task.deadline.simpleFormat(
-                    showTime = task.scheduleMode == TaskScheduleMode.ExactTime
+                    showTime = task.scheduleMode == TaskScheduleMode.ByTime
                 )
             }
 

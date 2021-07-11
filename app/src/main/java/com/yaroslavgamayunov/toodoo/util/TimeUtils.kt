@@ -1,5 +1,6 @@
 package com.yaroslavgamayunov.toodoo.util
 
+import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
 import java.time.*
 import java.time.temporal.ChronoUnit
 import kotlin.math.absoluteValue
@@ -42,3 +43,18 @@ fun Long.localToZonedDateTime(zoneId: ZoneId = ZoneId.systemDefault()): ZonedDat
         LocalDateTime.ofEpochSecond(this, 0, ZoneOffset.ofHours(0)),
         zoneId
     )
+
+fun LocalDateTime.isStartOfDay(): Boolean {
+    return this.toLocalTime().second == 0
+}
+
+fun Instant.taskScheduleMode(zoneId: ZoneId = ZoneId.systemDefault()): TaskScheduleMode {
+    if (this == TimeUtils.maxZonedDateTime.toInstant()) {
+        return TaskScheduleMode.Unspecified
+    }
+    val localDateTime = ZonedDateTime.ofInstant(this, zoneId).toLocalDateTime()
+    if (localDateTime.isStartOfDay()) {
+        return TaskScheduleMode.ByDate
+    }
+    return TaskScheduleMode.ByTime
+}

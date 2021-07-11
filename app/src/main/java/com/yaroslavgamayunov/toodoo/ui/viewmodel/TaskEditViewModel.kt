@@ -3,13 +3,13 @@ package com.yaroslavgamayunov.toodoo.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
-import com.yaroslavgamayunov.toodoo.data.model.TaskScheduleMode
 import com.yaroslavgamayunov.toodoo.domain.AddTaskUseCase
 import com.yaroslavgamayunov.toodoo.domain.DeleteTaskUseCase
 import com.yaroslavgamayunov.toodoo.domain.GetSingleTaskByIdUseCase
 import com.yaroslavgamayunov.toodoo.domain.UpdateTaskUseCase
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
+import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
 import com.yaroslavgamayunov.toodoo.util.TimeUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

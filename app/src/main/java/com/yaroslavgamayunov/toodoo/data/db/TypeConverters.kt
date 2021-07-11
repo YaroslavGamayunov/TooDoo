@@ -3,7 +3,6 @@ package com.yaroslavgamayunov.toodoo.data.db
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
-import com.yaroslavgamayunov.toodoo.data.model.TaskScheduleMode
 import java.time.Instant
 
 @ProvidedTypeConverter
@@ -29,18 +28,5 @@ class PriorityConverter {
     @TypeConverter
     fun intToPriority(level: Int?): TaskPriority? {
         return TaskPriority.values().find { it.level == level }
-    }
-}
-
-@ProvidedTypeConverter
-class ScheduleModeConverter {
-    @TypeConverter
-    fun scheduleModeToInt(scheduleMode: TaskScheduleMode?): Int? {
-        return scheduleMode?.id
-    }
-
-    @TypeConverter
-    fun intToScheduleMode(mode: Int?): TaskScheduleMode? {
-        return TaskScheduleMode.values().find { it.id == mode }
     }
 }
