@@ -6,12 +6,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import com.yaroslavgamayunov.toodoo.util.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.work.*
 import com.yaroslavgamayunov.toodoo.R
-import com.yaroslavgamayunov.toodoo.di.ApplicationContext
 import com.yaroslavgamayunov.toodoo.domain.GetCountOfDailyTasksUseCase
 import com.yaroslavgamayunov.toodoo.ui.MainActivity
 import com.yaroslavgamayunov.toodoo.util.TimeUtils
@@ -19,11 +19,9 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalTime
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import com.yaroslavgamayunov.toodoo.domain.common.Result as UseCaseResult
 
-class MorningNotificationWorker @Inject constructor(
-    @ApplicationContext
+class MorningNotificationWorker(
     context: Context,
     workerParameters: WorkerParameters,
     val getCountOfDailyTasksUseCase: GetCountOfDailyTasksUseCase
@@ -44,7 +42,10 @@ class MorningNotificationWorker @Inject constructor(
             applicationContext.getSystemService<NotificationManager>() ?: return
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel(notificationManager)
+            notificationManager.createNotificationChannel(
+                channelName = applicationContext.getString(R.string.daily_tasks_notification_channel_title),
+                channelId = DAILY_TASKS_NOTIFICATION_CHANNEL_ID
+            )
         }
 
         val contentText = applicationContext.resources.getQuantityString(
@@ -68,20 +69,6 @@ class MorningNotificationWorker @Inject constructor(
             .build()
 
         notificationManager.notify(DAILY_TASKS_NOTIFICATION_ID, notification)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotificationChannel(notificationManager: NotificationManager) {
-        val channelName =
-            applicationContext.getString(R.string.daily_tasks_notification_channel_title)
-
-        val notificationChannel = NotificationChannel(
-            DAILY_TASKS_NOTIFICATION_CHANNEL_ID,
-            channelName,
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-
-        notificationManager.createNotificationChannel(notificationChannel)
     }
 
     companion object {

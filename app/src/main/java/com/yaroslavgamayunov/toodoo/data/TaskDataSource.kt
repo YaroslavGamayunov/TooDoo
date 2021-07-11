@@ -35,12 +35,14 @@ suspend fun TaskDataSource.synchronizeWith(
         }
     }
 
-    for ((taskId, targetTask) in targetTasks.entries) {
-        if (currentTasks.containsKey(taskId)) {
-            val currentTask = currentTasks[taskId]!!
+    for ((targetTaskId, targetTask) in targetTasks.entries) {
+        if (currentTasks.containsKey(targetTaskId)) {
+            val currentTask = currentTasks[targetTaskId]!!
             if (targetTask.updatedAt.isAfter(currentTask.updatedAt)) {
                 addedOrUpdated.add(targetTask)
             }
+        } else {
+            addedOrUpdated.add(targetTask)
         }
     }
 

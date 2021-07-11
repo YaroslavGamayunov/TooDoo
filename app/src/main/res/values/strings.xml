@@ -19,8 +19,12 @@
     <string name="task_deletion_dialog_title">Delete the task?</string>
     <string name="cancel">Cancel</string>
 
+    <!-- Notifications !-->
     <string name="daily_tasks_notification_channel_title">Morning notification of oncoming tasks</string>
     <string name="daily_tasks_notification_title">Daily tasks</string>
+
+    <string name="task_sync_notification_channel_title">Notification of synchronization with server</string>
+    <string name="task_sync_notification_title">Syncing tasks with server…</string>
 
     <plurals name="completed_task_count">
         <item quantity="one">%d task completed</item>

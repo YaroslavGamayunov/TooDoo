@@ -5,6 +5,7 @@ import androidx.work.Configuration
 import com.yaroslavgamayunov.toodoo.di.AppComponent
 import com.yaroslavgamayunov.toodoo.di.DaggerAppComponent
 import com.yaroslavgamayunov.toodoo.work.MorningNotificationWorker
+import com.yaroslavgamayunov.toodoo.work.TaskSynchronizationWorker
 import com.yaroslavgamayunov.toodoo.work.TooDooWorkerFactory
 import timber.log.Timber
 import javax.inject.Inject
@@ -30,6 +31,7 @@ class TooDooApplication : Application(), Configuration.Provider {
 
     private fun setupWorkers() {
         MorningNotificationWorker.schedule(this)
+        TaskSynchronizationWorker.schedule(this)
     }
 
     private fun setupTimber() {
