@@ -1,7 +1,6 @@
 package com.yaroslavgamayunov.toodoo.domain
 
 import com.yaroslavgamayunov.toodoo.data.TaskRepository
-import com.yaroslavgamayunov.toodoo.data.mappers.toTaskEntity
 import com.yaroslavgamayunov.toodoo.di.IoDispatcher
 import com.yaroslavgamayunov.toodoo.domain.common.UseCase
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
@@ -14,6 +13,6 @@ class DeleteTaskUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) : UseCase<Task, Unit>(dispatcher) {
     override suspend fun execute(params: Task) {
-        taskRepository.deleteTask(params.toTaskEntity())
+        taskRepository.deleteTask(params)
     }
 }

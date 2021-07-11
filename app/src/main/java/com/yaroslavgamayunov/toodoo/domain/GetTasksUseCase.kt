@@ -1,8 +1,6 @@
 package com.yaroslavgamayunov.toodoo.domain
 
 import com.yaroslavgamayunov.toodoo.data.TaskRepository
-import com.yaroslavgamayunov.toodoo.data.db.TaskEntity
-import com.yaroslavgamayunov.toodoo.data.mappers.toTask
 import com.yaroslavgamayunov.toodoo.di.IoDispatcher
 import com.yaroslavgamayunov.toodoo.domain.common.FlowUseCase
 import com.yaroslavgamayunov.toodoo.domain.common.Result
@@ -15,10 +13,10 @@ import javax.inject.Inject
 
 data class GetTasksUseCaseParams(
     val showCompletedTasks: Boolean,
-    val currentlyCompletedTaskIds: Set<Int>
+    val currentlyCompletedTaskIds: Set<String>
 )
 
-private typealias TaskEntityListMapper = suspend (List<TaskEntity>) -> (List<Task>)
+private typealias TaskListMapper = suspend (List<Task>) -> (List<Task>)
 
 class GetTasksUseCase @Inject constructor(
     @IoDispatcher
@@ -31,12 +29,8 @@ class GetTasksUseCase @Inject constructor(
             .map { Result.Success(it) }
     }
 
-    private fun removeNotNeeded(params: GetTasksUseCaseParams): TaskEntityListMapper {
-        return { list ->
-            list
-                .map { it.toTask() }
-                .filter { isNeededToBeShown(it, params) }
-        }
+    private fun removeNotNeeded(params: GetTasksUseCaseParams): TaskListMapper {
+        return { list -> list.filter { isNeededToBeShown(it, params) } }
     }
 
     private fun isNeededToBeShown(task: Task, params: GetTasksUseCaseParams): Boolean {

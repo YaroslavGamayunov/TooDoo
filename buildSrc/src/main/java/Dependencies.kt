@@ -1,7 +1,5 @@
 object Versions {
     const val ANDROID_GRADLE_PLUGIN = "4.2.1"
-    const val VERSION_NAME = "1.0.0"
-    const val VERSION_CODE = 1
     const val BUILD_TOOLS = "30.0.3"
 
     const val KOTLIN = "1.5.10"
@@ -16,6 +14,11 @@ object Versions {
     const val NAVIGATION = "2.3.5"
     const val WORK = "2.5.0"
 
+    const val RETROFIT = "2.9.0"
+    const val LOGGING_INTERCEPTOR = "4.9.1"
+    const val GSON = "2.8.7"
+    const val TIMBER = "4.7.1"
+
     const val ROOM = "2.3.0"
     const val DAGGER = "2.36"
     const val CORE_LIBRARY_DESUGARING = "1.1.5"
@@ -25,10 +28,6 @@ object Versions {
     const val ESPRESSO_CORE = "3.3.0"
 
     const val DETEKT = "1.17.1"
-
-    const val MIN_SDK = 21
-    const val COMPILE_SDK = 30
-    const val TARGET_SDK = 30
 }
 
 object Dependencies {
@@ -58,6 +57,12 @@ object Dependencies {
             "androidx.navigation:navigation-ui-ktx:${Versions.NAVIGATION}"
 
         const val WORK = "androidx.work:work-runtime-ktx:${Versions.WORK}"
+        const val RETROFIT = "com.squareup.retrofit2:retrofit:${Versions.RETROFIT}"
+        const val LOGGING_INTERCEPTOR =
+            "com.squareup.okhttp3:logging-interceptor:${Versions.LOGGING_INTERCEPTOR}"
+        const val GSON = "com.google.code.gson:gson:${Versions.GSON}"
+        const val GSON_CONVERTER = "com.squareup.retrofit2:converter-gson:${Versions.RETROFIT}"
+        const val TIMBER = "com.jakewharton.timber:timber:${Versions.TIMBER}"
     }
 
     object DI {

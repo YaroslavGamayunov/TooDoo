@@ -20,7 +20,7 @@ class MainPageViewModel @Inject constructor(
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val getTasksUseCase: GetTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
-    private val addTasksUseCase: AddTasksUseCase,
+    private val addTaskUseCase: AddTaskUseCase,
     getCountOfCompletedTasksUseCase: GetCountOfCompletedTasksUseCase
 ) : ViewModel() {
     private val deletionUndoList = MutableStateFlow<List<Task>>(listOf())
@@ -30,7 +30,7 @@ class MainPageViewModel @Inject constructor(
     private var taskCollectingJob: Job? = null
 
     // Ids of tasks completed during interaction with main page
-    private val currentlyCompletedTaskIds = mutableSetOf<Int>()
+    private val currentlyCompletedTaskIds = mutableSetOf<String>()
 
     var isShowingCompletedTasks = false
         set(value) {
@@ -78,7 +78,8 @@ class MainPageViewModel @Inject constructor(
     fun undoDeletedTasks() {
         deletionUndoListCleaningJob?.cancel()
         viewModelScope.launch {
-            addTasksUseCase(deletionUndoList.value)
+            // TODO: Find out how to implement undo
+            //addTaskUseCase(deletionUndoList.value)
             deletionUndoList.value = mutableListOf()
         }
     }

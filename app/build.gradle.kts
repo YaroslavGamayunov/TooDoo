@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -9,18 +7,24 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Versions.COMPILE_SDK)
+    compileSdkVersion(Config.COMPILE_SDK)
     buildToolsVersion = Versions.BUILD_TOOLS
 
     defaultConfig {
         applicationId = "com.yaroslavgamayunov.toodoo"
-        minSdkVersion(Versions.MIN_SDK)
-        targetSdkVersion(Versions.TARGET_SDK)
-        versionCode(Versions.VERSION_CODE)
-        versionName(Versions.VERSION_NAME)
+        minSdkVersion(Config.MIN_SDK)
+        targetSdkVersion(Config.TARGET_SDK)
+        versionCode(Config.VERSION_CODE)
+        versionName(Config.VERSION_NAME)
 
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "TASK_API_TOKEN",
+            "\"${Config.TASK_API_TOKEN}\""
+        )
     }
 
     buildTypes {
@@ -69,6 +73,11 @@ dependencies {
     implementation(Dependencies.Android.NAVIGATION_FRAGMENT_KTX)
 
     implementation(Dependencies.Android.WORK)
+    implementation(Dependencies.Android.RETROFIT)
+    implementation(Dependencies.Android.LOGGING_INTERCEPTOR)
+    implementation(Dependencies.Android.GSON)
+    implementation(Dependencies.Android.GSON_CONVERTER)
+    implementation(Dependencies.Android.TIMBER)
 
     // DI
     implementation(Dependencies.DI.DAGGER)

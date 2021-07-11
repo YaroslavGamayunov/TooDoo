@@ -6,6 +6,7 @@ import com.yaroslavgamayunov.toodoo.di.AppComponent
 import com.yaroslavgamayunov.toodoo.di.DaggerAppComponent
 import com.yaroslavgamayunov.toodoo.work.MorningNotificationWorker
 import com.yaroslavgamayunov.toodoo.work.TooDooWorkerFactory
+import timber.log.Timber
 import javax.inject.Inject
 
 class TooDooApplication : Application(), Configuration.Provider {
@@ -20,6 +21,7 @@ class TooDooApplication : Application(), Configuration.Provider {
         super.onCreate()
         appComponent.inject(this)
         setupWorkers()
+        setupTimber()
     }
 
     override fun getWorkManagerConfiguration(): Configuration {
@@ -28,5 +30,11 @@ class TooDooApplication : Application(), Configuration.Provider {
 
     private fun setupWorkers() {
         MorningNotificationWorker.schedule(this)
+    }
+
+    private fun setupTimber() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
     }
 }

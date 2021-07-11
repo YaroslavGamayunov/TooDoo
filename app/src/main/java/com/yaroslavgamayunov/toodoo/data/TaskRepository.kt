@@ -1,75 +1,93 @@
 package com.yaroslavgamayunov.toodoo.data
 
-import com.yaroslavgamayunov.toodoo.data.db.TaskDao
-import com.yaroslavgamayunov.toodoo.data.db.TaskDatabase
-import com.yaroslavgamayunov.toodoo.data.db.TaskEntity
 import com.yaroslavgamayunov.toodoo.di.ApplicationCoroutineScope
+import com.yaroslavgamayunov.toodoo.di.LocalDataSource
+import com.yaroslavgamayunov.toodoo.di.RemoteDataSource
+import com.yaroslavgamayunov.toodoo.domain.entities.Task
+import com.yaroslavgamayunov.toodoo.util.NetworkUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 interface TaskRepository {
-    fun getAllTasks(): Flow<List<TaskEntity>>
-    suspend fun getTask(id: Int): TaskEntity
-    fun getCompletedTasks(): Flow<List<TaskEntity>>
+    suspend fun synchronizeLocalAndRemote()
+    fun getAllTasks(): Flow<List<Task>>
+    suspend fun getTask(id: String): Task
+    fun getCompletedTasks(): Flow<List<Task>>
     fun getCountOfCompletedTasks(): Flow<Int>
-    fun getUncompletedTasks(): Flow<List<TaskEntity>>
+    fun getUncompletedTasks(): Flow<List<Task>>
     fun getCountOfDailyTasks(): Flow<Int>
 
-    suspend fun setCompleted(task: TaskEntity, isCompleted: Boolean)
-    suspend fun insertTasks(tasks: List<TaskEntity>)
-    suspend fun deleteTask(task: TaskEntity)
+    suspend fun updateTask(task: Task)
+    suspend fun addTask(task: Task)
+    suspend fun deleteTask(task: Task)
 }
 
 class DefaultTaskRepository @Inject constructor(
-    database: TaskDatabase,
+    @LocalDataSource
+    private val localTaskDataSource: TaskDataSource,
+    @RemoteDataSource
+    private val remoteTaskDataSource: TaskDataSource,
+    private val networkUtils: NetworkUtils,
     @ApplicationCoroutineScope
-    val applicationCoroutineScope: CoroutineScope
+    val externalScope: CoroutineScope
 ) : TaskRepository {
-    private val taskDao: TaskDao = database.taskDao()
-    override fun getAllTasks(): Flow<List<TaskEntity>> = taskDao.getAll()
 
-    override suspend fun getTask(id: Int): TaskEntity = taskDao.getTask(id)
-
-    override fun getCompletedTasks(): Flow<List<TaskEntity>> =
-        taskDao.getAll(completed = true)
-
-    override fun getCountOfCompletedTasks(): Flow<Int> {
-        return taskDao.getCountOfTasks(completed = true)
+    override suspend fun synchronizeLocalAndRemote() {
+        externalScope.launch {
+            if (networkUtils.isNetworkAvailable()) {
+                localTaskDataSource.synchronizeWith(remoteTaskDataSource)
+                remoteTaskDataSource.synchronizeWith(localTaskDataSource)
+            }
+        }.join()
     }
 
-    override fun getUncompletedTasks(): Flow<List<TaskEntity>> =
-        taskDao.getAll(completed = false)
+    override fun getAllTasks(): Flow<List<Task>> = localTaskDataSource.getAll().filterNotNull()
+
+    override suspend fun getTask(id: String): Task = localTaskDataSource.get(id)
+
+    override fun getCompletedTasks(): Flow<List<Task>> =
+        localTaskDataSource.getAll().map { tasks -> tasks.filter { it.isCompleted } }
+
+    override fun getCountOfCompletedTasks(): Flow<Int> =
+        localTaskDataSource.getAll().map { tasks -> tasks.count { it.isCompleted } }
+
+    override fun getUncompletedTasks(): Flow<List<Task>> =
+        localTaskDataSource.getAll().map { tasks -> tasks.filter { it.isCompleted } }
 
     override fun getCountOfDailyTasks(): Flow<Int> {
-        val currentDayStart = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).toInstant()
+        val currentDayStart = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)
         val currentDayEnd = currentDayStart.plus(1, ChronoUnit.DAYS)
 
-        return taskDao.getCountOfTasks(
-            completed = false,
-            minDeadlineTime = currentDayStart,
-            maxDeadlineTime = currentDayEnd
-        )
+        return localTaskDataSource.getAll().map { tasks ->
+            tasks.count {
+                !it.isCompleted and
+                        it.deadline.isAfter(currentDayStart) and
+                        it.deadline.isBefore(currentDayEnd)
+            }
+        }
     }
 
-    override suspend fun setCompleted(task: TaskEntity, isCompleted: Boolean) {
-        applicationCoroutineScope.launch {
-            taskDao.setCompleted(task.taskId, completed = isCompleted)
-        }.join()
+    override suspend fun updateTask(task: Task) {
+        val timeOfUpdate = Instant.now()
+        externalScope.launch { remoteTaskDataSource.update(task, timeOfUpdate) }
+        externalScope.launch { localTaskDataSource.update(task, timeOfUpdate) }.join()
     }
 
-    override suspend fun insertTasks(tasks: List<TaskEntity>) {
-        applicationCoroutineScope.launch {
-            taskDao.insertAll(tasks)
-        }.join()
+    override suspend fun addTask(task: Task) {
+        val timeOfAdd = Instant.now()
+        externalScope.launch { remoteTaskDataSource.add(task, timeOfAdd) }
+        externalScope.launch { localTaskDataSource.add(task, timeOfAdd) }.join()
     }
 
-    override suspend fun deleteTask(task: TaskEntity) {
-        applicationCoroutineScope.launch {
-            taskDao.delete(task)
-        }.join()
+    override suspend fun deleteTask(task: Task) {
+        externalScope.launch { remoteTaskDataSource.delete(task) }
+        externalScope.launch { localTaskDataSource.delete(task) }.join()
     }
 }

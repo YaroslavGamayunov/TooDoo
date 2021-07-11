@@ -2,8 +2,8 @@ package com.yaroslavgamayunov.toodoo.data.db
 
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
-import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
-import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
+import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
+import com.yaroslavgamayunov.toodoo.data.model.TaskScheduleMode
 import java.time.Instant
 
 @ProvidedTypeConverter

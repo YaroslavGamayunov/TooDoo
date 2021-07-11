@@ -3,7 +3,9 @@ package com.yaroslavgamayunov.toodoo.ui.mainpage
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StrikethroughSpan
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -11,13 +13,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.yaroslavgamayunov.toodoo.R
+import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
+import com.yaroslavgamayunov.toodoo.data.model.TaskScheduleMode
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
-import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
-import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
-import com.yaroslavgamayunov.toodoo.util.simpleFormat
 import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
 import com.yaroslavgamayunov.toodoo.util.getColorStateListCompat
 import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
+import com.yaroslavgamayunov.toodoo.util.simpleFormat
 import java.time.ZonedDateTime
 
 class TaskAdapter(

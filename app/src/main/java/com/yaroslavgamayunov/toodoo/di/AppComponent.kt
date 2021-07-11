@@ -15,13 +15,14 @@ import dagger.Component
         AppModule::class,
         RepositoryModule::class,
         ViewModelModule::class,
-        WorkerModule::class
+        WorkerModule::class,
+        NetworkModule::class
     ]
 )
 interface AppComponent {
     @Component.Factory
     interface Builder {
-        fun create(@BindsInstance context: Context): AppComponent
+        fun create(@BindsInstance @ApplicationContext context: Context): AppComponent
     }
 
     fun inject(application: TooDooApplication)

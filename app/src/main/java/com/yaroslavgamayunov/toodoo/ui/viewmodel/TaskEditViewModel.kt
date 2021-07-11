@@ -2,29 +2,32 @@ package com.yaroslavgamayunov.toodoo.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yaroslavgamayunov.toodoo.domain.AddTasksUseCase
+import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
+import com.yaroslavgamayunov.toodoo.data.model.TaskScheduleMode
+import com.yaroslavgamayunov.toodoo.domain.AddTaskUseCase
 import com.yaroslavgamayunov.toodoo.domain.DeleteTaskUseCase
 import com.yaroslavgamayunov.toodoo.domain.GetSingleTaskByIdUseCase
+import com.yaroslavgamayunov.toodoo.domain.UpdateTaskUseCase
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
-import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
-import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
 import com.yaroslavgamayunov.toodoo.util.TimeUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
+import java.util.*
 import javax.inject.Inject
 
 class TaskEditViewModel @Inject constructor(
-    private val addTasksUseCase: AddTasksUseCase,
+    private val addTaskUseCase: AddTaskUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
     private val getSingleTaskByIdUseCase: GetSingleTaskByIdUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase
 ) : ViewModel() {
 
     private var _editableTask = MutableStateFlow(
         Task(
-            taskId = 0,
+            taskId = UUID.randomUUID().toString(),
             description = "",
             isCompleted = false,
             deadline = TimeUtils.maxZonedDateTime,
@@ -34,10 +37,12 @@ class TaskEditViewModel @Inject constructor(
     )
 
     val task get() = _editableTask.asStateFlow()
+    private var isNewTaskCreated = true
 
-    fun loadTaskForEditing(id: Int) {
+    fun loadTaskForEditing(id: String) {
         viewModelScope.launch {
             getSingleTaskByIdUseCase(id).doIfSuccess {
+                isNewTaskCreated = false
                 _editableTask.value = it
             }
         }
@@ -65,7 +70,13 @@ class TaskEditViewModel @Inject constructor(
     }
 
     fun saveChanges() {
-        viewModelScope.launch { addTasksUseCase(listOf(_editableTask.value)) }
+        viewModelScope.launch {
+            if (isNewTaskCreated) {
+                addTaskUseCase(_editableTask.value)
+            } else {
+                updateTaskUseCase(_editableTask.value)
+            }
+        }
     }
 
     fun deleteTask() {

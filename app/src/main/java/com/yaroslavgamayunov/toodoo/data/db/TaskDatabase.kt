@@ -6,8 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [TaskEntity::class], version = 1, exportSchema = false)
-@TypeConverters(TimeConverter::class, PriorityConverter::class, ScheduleModeConverter::class)
+@Database(entities = [TaskRoomEntity::class], version = 1, exportSchema = false)
+@TypeConverters(
+    TimeConverter::class,
+    PriorityConverter::class,
+    ScheduleModeConverter::class
+)
 abstract class TaskDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
 

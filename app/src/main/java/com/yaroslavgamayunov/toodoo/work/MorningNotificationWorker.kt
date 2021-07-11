@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.work.*
 import com.yaroslavgamayunov.toodoo.R
+import com.yaroslavgamayunov.toodoo.di.ApplicationContext
 import com.yaroslavgamayunov.toodoo.domain.GetCountOfDailyTasksUseCase
 import com.yaroslavgamayunov.toodoo.ui.MainActivity
 import com.yaroslavgamayunov.toodoo.util.TimeUtils
@@ -22,6 +23,7 @@ import javax.inject.Inject
 import com.yaroslavgamayunov.toodoo.domain.common.Result as UseCaseResult
 
 class MorningNotificationWorker @Inject constructor(
+    @ApplicationContext
     context: Context,
     workerParameters: WorkerParameters,
     val getCountOfDailyTasksUseCase: GetCountOfDailyTasksUseCase

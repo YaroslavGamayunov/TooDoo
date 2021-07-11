@@ -7,13 +7,12 @@ import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
-class CompleteTaskUseCase @Inject constructor(
+class AddTaskUseCase @Inject constructor(
     @IoDispatcher
     dispatcher: CoroutineDispatcher,
     private val taskRepository: TaskRepository
-) : UseCase<Pair<Task, Boolean>, Unit>(dispatcher) {
-    override suspend fun execute(params: Pair<Task, Boolean>) {
-        val (task, completed) = params
-        taskRepository.updateTask(task.copy(isCompleted = completed))
+) : UseCase<Task, Unit>(dispatcher) {
+    override suspend fun execute(params: Task) {
+        taskRepository.addTask(params)
     }
 }

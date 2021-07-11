@@ -9,7 +9,7 @@ import dagger.Provides
 class AppModule {
     @ApplicationScoped
     @Provides
-    fun provideTaskDatabase(context: Context): TaskDatabase {
+    fun provideTaskDatabase(@ApplicationContext context: Context): TaskDatabase {
         return TaskDatabase.build(context)
     }
 }
