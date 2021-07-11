@@ -20,6 +20,7 @@ class MainPageViewModel @Inject constructor(
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val getTasksUseCase: GetTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
+    private val synchronizeTasksUseCase: SynchronizeTasksUseCase,
     private val addTaskUseCase: AddTaskUseCase,
     getCountOfCompletedTasksUseCase: GetCountOfCompletedTasksUseCase
 ) : ViewModel() {
@@ -40,6 +41,9 @@ class MainPageViewModel @Inject constructor(
 
     private val _tasks = MutableStateFlow<Result<List<Task>>>(Result.Loading)
     val tasks = _tasks.asStateFlow()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
 
     val completedTaskCount = getCountOfCompletedTasksUseCase(Unit)
 
@@ -95,6 +99,14 @@ class MainPageViewModel @Inject constructor(
             completeTaskUseCase(
                 task to isCompleted
             )
+        }
+    }
+
+    fun refreshTasks() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            synchronizeTasksUseCase.invoke(Unit)
+            _isRefreshing.value = false
         }
     }
 

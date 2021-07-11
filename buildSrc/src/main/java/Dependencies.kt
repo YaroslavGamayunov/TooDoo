@@ -10,6 +10,7 @@ object Versions {
     const val MATERIAL = "1.3.0"
     const val CONSTRAINT_LAYOUT = "2.0.4"
     const val COORDINATOR_LAYOUT = "1.1.0"
+    const val SWIPE_REFRESH_LAYOUT = "1.1.0"
     const val FRAGMENT = "1.3.4"
     const val NAVIGATION = "2.3.5"
     const val WORK = "2.5.0"
@@ -45,7 +46,9 @@ object Dependencies {
             "androidx.constraintlayout:constraintlayout:${Versions.CONSTRAINT_LAYOUT}"
         const val COORDINATOR_LAYOUT =
             "androidx.coordinatorlayout:coordinatorlayout:${Versions.COORDINATOR_LAYOUT}"
-        val FRAGMENT_KTX = "androidx.fragment:fragment-ktx:${Versions.FRAGMENT}"
+        const val SWIPE_REFRESH_LAYOUT =
+            "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.SWIPE_REFRESH_LAYOUT}"
+        const val FRAGMENT_KTX = "androidx.fragment:fragment-ktx:${Versions.FRAGMENT}"
 
         const val ROOM_COMPILER = "androidx.room:room-compiler:${Versions.ROOM}"
         const val ROOM_KTX = "androidx.room:room-ktx:${Versions.ROOM}"

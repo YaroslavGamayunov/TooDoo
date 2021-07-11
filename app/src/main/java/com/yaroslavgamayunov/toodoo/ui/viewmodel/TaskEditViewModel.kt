@@ -25,7 +25,7 @@ class TaskEditViewModel @Inject constructor(
     private val deleteTaskUseCase: DeleteTaskUseCase
 ) : ViewModel() {
 
-    private var _editableTask = MutableStateFlow(
+    private var editableTask = MutableStateFlow(
         Task(
             taskId = UUID.randomUUID().toString(),
             description = "",
@@ -36,32 +36,32 @@ class TaskEditViewModel @Inject constructor(
         )
     )
 
-    val task get() = _editableTask.asStateFlow()
+    val task get() = editableTask.asStateFlow()
     private var isNewTaskCreated = true
 
     fun loadTaskForEditing(id: String) {
         viewModelScope.launch {
             getSingleTaskByIdUseCase(id).doIfSuccess {
                 isNewTaskCreated = false
-                _editableTask.value = it
+                editableTask.value = it
             }
         }
     }
 
     fun updateDescription(description: String) {
-        _editableTask.value = _editableTask.value.copy(description = description)
+        editableTask.value = editableTask.value.copy(description = description)
     }
 
     fun updatePriority(priority: TaskPriority) {
-        _editableTask.value = _editableTask.value.copy(priority = priority)
+        editableTask.value = editableTask.value.copy(priority = priority)
     }
 
     fun updateDeadline(deadline: ZonedDateTime) {
-        _editableTask.value = _editableTask.value.copy(deadline = deadline)
+        editableTask.value = editableTask.value.copy(deadline = deadline)
     }
 
     fun updateScheduleMode(scheduleMode: TaskScheduleMode) {
-        _editableTask.let {
+        editableTask.let {
             it.value = if (scheduleMode == TaskScheduleMode.Unspecified) it.value.copy(
                 scheduleMode = scheduleMode,
                 deadline = TimeUtils.maxZonedDateTime
@@ -72,16 +72,16 @@ class TaskEditViewModel @Inject constructor(
     fun saveChanges() {
         viewModelScope.launch {
             if (isNewTaskCreated) {
-                addTaskUseCase(_editableTask.value)
+                addTaskUseCase(editableTask.value)
             } else {
-                updateTaskUseCase(_editableTask.value)
+                updateTaskUseCase(editableTask.value)
             }
         }
     }
 
     fun deleteTask() {
         viewModelScope.launch {
-            deleteTaskUseCase(_editableTask.value)
+            deleteTaskUseCase(editableTask.value)
         }
     }
 }

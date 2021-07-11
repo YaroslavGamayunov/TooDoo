@@ -19,8 +19,10 @@ import com.yaroslavgamayunov.toodoo.ui.base.BaseFragment
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.MainPageViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
 import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MainPageFragment : BaseFragment() {
@@ -82,6 +84,18 @@ class MainPageFragment : BaseFragment() {
             mainPageAppbarLayout.setOnClickListener {
                 mainPageScrollView.smoothScrollTo(0, 0)
                 mainPageAppbarLayout.setExpanded(true)
+            }
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                mainPageViewModel.isRefreshing.collect {
+                    withContext(Dispatchers.Main) {
+                        mainPageSwipeRefreshLayout.isRefreshing = it
+                    }
+                }
+            }
+
+            mainPageSwipeRefreshLayout.setOnRefreshListener {
+                mainPageViewModel.refreshTasks()
             }
         }
     }

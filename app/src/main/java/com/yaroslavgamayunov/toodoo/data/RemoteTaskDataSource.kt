@@ -6,9 +6,11 @@ import com.yaroslavgamayunov.toodoo.data.mappers.toTask
 import com.yaroslavgamayunov.toodoo.data.mappers.toTaskApiEntity
 import com.yaroslavgamayunov.toodoo.data.model.TaskWithTimestamps
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.time.Instant
 import javax.inject.Inject
 
@@ -18,7 +20,7 @@ class RemoteTaskDataSource @Inject constructor(
     override fun getAll(): Flow<List<Task>> {
         return flow {
             emit(webService.getAllTasks().map { it.toTask() })
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun getAllWithTimestamps(): List<TaskWithTimestamps> {

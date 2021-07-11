@@ -63,6 +63,7 @@ dependencies {
     implementation(Dependencies.Android.MATERIAL)
     implementation(Dependencies.Android.CONSTRAINT_LAYOUT)
     implementation(Dependencies.Android.COORDINATOR_LAYOUT)
+    implementation(Dependencies.Android.SWIPE_REFRESH_LAYOUT)
     implementation(Dependencies.Android.FRAGMENT_KTX)
 
     implementation(Dependencies.Android.ROOM_RUNTIME)

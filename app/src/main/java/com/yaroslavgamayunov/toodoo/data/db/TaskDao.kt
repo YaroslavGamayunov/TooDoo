@@ -12,7 +12,7 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE completed = :completed ORDER BY deadline ASC, priority DESC")
     fun getAll(completed: Boolean): Flow<List<TaskRoomEntity>>
 
-    @Query("SELECT * FROM tasks ORDER BY deadline ASC, priority DESC")
+    @Query("SELECT * FROM tasks ORDER BY deadline ASC, priority DESC, created_at ASC")
     fun getAll(): Flow<List<TaskRoomEntity>>
 
     @Query("SELECT * FROM tasks WHERE task_id = :id LIMIT 1")

@@ -21,7 +21,8 @@ interface TaskDataSource {
 }
 
 suspend fun TaskDataSource.synchronizeWith(
-    target: TaskDataSource
+    target: TaskDataSource,
+    lastSynchronizationTime: Instant
 ) {
     val currentTasks = getAllWithTimestamps().map { it.data.taskId to it }.toMap()
     val targetTasks = target.getAllWithTimestamps().map { it.data.taskId to it }.toMap()
@@ -30,7 +31,7 @@ suspend fun TaskDataSource.synchronizeWith(
     val addedOrUpdated = mutableListOf<TaskWithTimestamps>()
 
     for ((taskId, task) in currentTasks) {
-        if (!targetTasks.containsKey(taskId)) {
+        if (!targetTasks.containsKey(taskId) && task.updatedAt < lastSynchronizationTime) {
             deletedTasks.add(task.data)
         }
     }
