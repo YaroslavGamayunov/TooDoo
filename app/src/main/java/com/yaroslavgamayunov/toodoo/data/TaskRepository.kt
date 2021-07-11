@@ -26,9 +26,9 @@ interface TaskRepository {
     fun getUncompletedTasks(): Flow<List<Task>>
     fun getCountOfDailyTasks(): Flow<Int>
 
-    suspend fun updateTask(task: Task)
-    suspend fun addTask(task: Task)
-    suspend fun deleteTask(task: Task)
+    suspend fun updateTasks(tasks: List<Task>)
+    suspend fun addTasks(tasks: List<Task>)
+    suspend fun deleteTasks(tasks: List<Task>)
 }
 
 class DefaultTaskRepository @Inject constructor(
@@ -91,21 +91,21 @@ class DefaultTaskRepository @Inject constructor(
         }
     }
 
-    override suspend fun updateTask(task: Task) {
+    override suspend fun updateTasks(tasks: List<Task>) {
         val timeOfUpdate = Instant.now()
-        externalScope.launch { remoteTaskDataSource.update(task, timeOfUpdate) }
-        externalScope.launch { localTaskDataSource.update(task, timeOfUpdate) }.join()
+        externalScope.launch { remoteTaskDataSource.updateAll(tasks, timeOfUpdate) }
+        externalScope.launch { localTaskDataSource.updateAll(tasks, timeOfUpdate) }.join()
     }
 
-    override suspend fun addTask(task: Task) {
+    override suspend fun addTasks(tasks: List<Task>) {
         val timeOfAdd = Instant.now()
-        externalScope.launch { remoteTaskDataSource.add(task, timeOfAdd) }
-        externalScope.launch { localTaskDataSource.add(task, timeOfAdd) }.join()
+        externalScope.launch { remoteTaskDataSource.addAll(tasks, timeOfAdd) }
+        externalScope.launch { localTaskDataSource.addAll(tasks, timeOfAdd) }.join()
     }
 
-    override suspend fun deleteTask(task: Task) {
-        externalScope.launch { remoteTaskDataSource.delete(task) }
-        externalScope.launch { localTaskDataSource.delete(task) }.join()
+    override suspend fun deleteTasks(tasks: List<Task>) {
+        externalScope.launch { remoteTaskDataSource.deleteAll(tasks) }
+        externalScope.launch { localTaskDataSource.deleteAll(tasks) }.join()
     }
 
     companion object {

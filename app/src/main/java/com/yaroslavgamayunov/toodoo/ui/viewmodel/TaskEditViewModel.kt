@@ -3,8 +3,8 @@ package com.yaroslavgamayunov.toodoo.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
-import com.yaroslavgamayunov.toodoo.domain.AddTaskUseCase
-import com.yaroslavgamayunov.toodoo.domain.DeleteTaskUseCase
+import com.yaroslavgamayunov.toodoo.domain.AddTasksUseCase
+import com.yaroslavgamayunov.toodoo.domain.DeleteTasksUseCase
 import com.yaroslavgamayunov.toodoo.domain.GetSingleTaskByIdUseCase
 import com.yaroslavgamayunov.toodoo.domain.UpdateTaskUseCase
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
@@ -19,10 +19,10 @@ import java.util.*
 import javax.inject.Inject
 
 class TaskEditViewModel @Inject constructor(
-    private val addTaskUseCase: AddTaskUseCase,
+    private val addTasksUseCase: AddTasksUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val getSingleTaskByIdUseCase: GetSingleTaskByIdUseCase,
-    private val deleteTaskUseCase: DeleteTaskUseCase
+    private val deleteTasksUseCase: DeleteTasksUseCase
 ) : ViewModel() {
 
     private var editableTask = MutableStateFlow(
@@ -72,7 +72,7 @@ class TaskEditViewModel @Inject constructor(
     fun saveChanges() {
         viewModelScope.launch {
             if (isNewTaskCreated) {
-                addTaskUseCase(editableTask.value)
+                addTasksUseCase(listOf(editableTask.value))
             } else {
                 updateTaskUseCase(editableTask.value)
             }
@@ -81,7 +81,7 @@ class TaskEditViewModel @Inject constructor(
 
     fun deleteTask() {
         viewModelScope.launch {
-            deleteTaskUseCase(editableTask.value)
+            deleteTasksUseCase(listOf(editableTask.value))
         }
     }
 }

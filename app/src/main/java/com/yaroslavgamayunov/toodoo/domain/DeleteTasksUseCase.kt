@@ -7,12 +7,12 @@ import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
-class AddTaskUseCase @Inject constructor(
+class DeleteTasksUseCase @Inject constructor(
     @IoDispatcher
     dispatcher: CoroutineDispatcher,
     private val taskRepository: TaskRepository
-) : UseCase<Task, Unit>(dispatcher) {
-    override suspend fun execute(params: Task) {
-        taskRepository.addTask(params)
+) : UseCase<List<Task>, Unit>(dispatcher) {
+    override suspend fun execute(params: List<Task>) {
+        taskRepository.deleteTasks(params)
     }
 }

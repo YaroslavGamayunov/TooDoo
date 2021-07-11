@@ -13,6 +13,6 @@ class UpdateTaskUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) : UseCase<Task, Unit>(dispatcher) {
     override suspend fun execute(params: Task) {
-        taskRepository.updateTask(params)
+        taskRepository.updateTasks(listOf(params))
     }
 }

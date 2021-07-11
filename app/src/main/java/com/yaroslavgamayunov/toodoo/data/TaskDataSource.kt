@@ -10,9 +10,10 @@ interface TaskDataSource {
     suspend fun getAllWithTimestamps(): List<TaskWithTimestamps>
 
     suspend fun get(id: String): Task
-    suspend fun add(task: Task, timeOfAdd: Instant = Instant.now())
-    suspend fun update(task: Task, timeOfUpdate: Instant = Instant.now())
-    suspend fun delete(task: Task)
+
+    suspend fun addAll(tasks: List<Task>, timeOfAdd: Instant = Instant.now())
+    suspend fun updateAll(tasks: List<Task>, timeOfUpdate: Instant = Instant.now())
+    suspend fun deleteAll(tasks: List<Task>)
 
     suspend fun synchronizeChanges(
         addedOrUpdated: List<TaskWithTimestamps>,
@@ -22,7 +23,7 @@ interface TaskDataSource {
 
 suspend fun TaskDataSource.synchronizeWith(
     target: TaskDataSource,
-    lastSynchronizationTime: Instant
+    previousSynchronizationTime: Instant
 ) {
     val currentTasks = getAllWithTimestamps().map { it.data.taskId to it }.toMap()
     val targetTasks = target.getAllWithTimestamps().map { it.data.taskId to it }.toMap()
@@ -31,7 +32,7 @@ suspend fun TaskDataSource.synchronizeWith(
     val addedOrUpdated = mutableListOf<TaskWithTimestamps>()
 
     for ((taskId, task) in currentTasks) {
-        if (!targetTasks.containsKey(taskId) && task.updatedAt < lastSynchronizationTime) {
+        if (!targetTasks.containsKey(taskId) && task.updatedAt < previousSynchronizationTime) {
             deletedTasks.add(task.data)
         }
     }

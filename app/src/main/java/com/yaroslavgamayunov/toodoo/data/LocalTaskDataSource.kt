@@ -32,31 +32,33 @@ class LocalTaskDataSource @Inject constructor(
         return taskDao.getTask(id).toTask()
     }
 
-    override suspend fun add(task: Task, timeOfAdd: Instant) {
+    override suspend fun addAll(tasks: List<Task>, timeOfAdd: Instant) {
         taskDao.insertAll(
-            listOf(
-                task.toTaskRoomEntity(
+            tasks.map {
+                it.toTaskRoomEntity(
                     createdAt = timeOfAdd,
                     updatedAt = timeOfAdd
                 )
-            )
+            }
         )
     }
 
-    override suspend fun update(task: Task, timeOfUpdate: Instant) {
-        val (createdAt, _) = taskDao.getTimestamps(task.taskId)
+    override suspend fun updateAll(tasks: List<Task>, timeOfUpdate: Instant) {
+        val timestamps = taskDao.getTimestamps(tasks.map { it.taskId }).groupBy { it.taskId }
+            .mapValues { it.value.first() }
+
         taskDao.insertAll(
-            listOf(
-                task.toTaskRoomEntity(
-                    createdAt = createdAt,
+            tasks.map {
+                it.toTaskRoomEntity(
+                    createdAt = timestamps[it.taskId]!!.createdAt,
                     updatedAt = timeOfUpdate
                 )
-            )
+            }
         )
     }
 
-    override suspend fun delete(task: Task) {
-        taskDao.deleteAll(listOf(task.toTaskRoomEntity()))
+    override suspend fun deleteAll(tasks: List<Task>) {
+        taskDao.deleteAll(tasks.map { it.toTaskRoomEntity() })
     }
 
     override suspend fun synchronizeChanges(

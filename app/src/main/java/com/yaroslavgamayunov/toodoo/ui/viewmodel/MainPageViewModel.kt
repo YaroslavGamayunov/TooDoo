@@ -6,7 +6,6 @@ import com.yaroslavgamayunov.toodoo.domain.*
 import com.yaroslavgamayunov.toodoo.domain.common.Result
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +16,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainPageViewModel @Inject constructor(
-    private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val deleteTasksUseCase: DeleteTasksUseCase,
     private val getTasksUseCase: GetTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val synchronizeTasksUseCase: SynchronizeTasksUseCase,
-    private val addTaskUseCase: AddTaskUseCase,
+    private val addTasksUseCase: AddTasksUseCase,
     getCountOfCompletedTasksUseCase: GetCountOfCompletedTasksUseCase
 ) : ViewModel() {
     private val deletionUndoList = MutableStateFlow<List<Task>>(listOf())
@@ -49,7 +48,7 @@ class MainPageViewModel @Inject constructor(
 
     private fun collectTasks(showingCompleted: Boolean) {
         taskCollectingJob?.cancel()
-        taskCollectingJob = viewModelScope.launch(Dispatchers.IO) {
+        taskCollectingJob = viewModelScope.launch {
             getTasksUseCase(
                 GetTasksUseCaseParams(
                     showingCompleted,
@@ -65,7 +64,7 @@ class MainPageViewModel @Inject constructor(
 
     fun deleteTask(task: Task) {
         viewModelScope.launch {
-            deleteTaskUseCase(task).doIfSuccess {
+            deleteTasksUseCase(listOf(task)).doIfSuccess {
                 deletionUndoListCleaningJob?.cancel()
                 deletionUndoListCleaningJob = viewModelScope.launch {
                     delay(TASK_DELETION_UNDO_TIMEOUT)
@@ -82,8 +81,7 @@ class MainPageViewModel @Inject constructor(
     fun undoDeletedTasks() {
         deletionUndoListCleaningJob?.cancel()
         viewModelScope.launch {
-            // TODO: Find out how to implement undo
-            //addTaskUseCase(deletionUndoList.value)
+            addTasksUseCase(deletionUndoList.value)
             deletionUndoList.value = mutableListOf()
         }
     }

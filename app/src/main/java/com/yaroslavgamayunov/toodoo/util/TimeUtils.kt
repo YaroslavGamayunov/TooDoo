@@ -49,7 +49,7 @@ fun LocalDateTime.isStartOfDay(): Boolean {
 }
 
 fun Instant.taskScheduleMode(zoneId: ZoneId = ZoneId.systemDefault()): TaskScheduleMode {
-    if (this == TimeUtils.maxZonedDateTime.toInstant()) {
+    if (this.epochSecond == TimeUtils.maxZonedDateTime.toEpochSecond()) {
         return TaskScheduleMode.Unspecified
     }
     val localDateTime = ZonedDateTime.ofInstant(this, zoneId).toLocalDateTime()

@@ -6,6 +6,8 @@ import java.time.Instant
 
 @Entity
 data class Timestamps(
+    @ColumnInfo(name = "task_id")
+    val taskId: String,
     @ColumnInfo(name = "created_at")
     val createdAt: Instant,
     @ColumnInfo(name = "updated_at")

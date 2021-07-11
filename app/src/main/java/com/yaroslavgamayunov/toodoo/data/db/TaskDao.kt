@@ -24,8 +24,8 @@ interface TaskDao {
     @Query("UPDATE tasks SET completed = :completed WHERE task_id = :taskId")
     suspend fun setCompleted(taskId: String, completed: Boolean)
 
-    @Query("SELECT created_at, updated_at from tasks WHERE task_id = :taskId")
-    suspend fun getTimestamps(taskId: String): Timestamps
+    @Query("SELECT task_id, created_at, updated_at from tasks WHERE task_id IN(:taskIds)")
+    suspend fun getTimestamps(taskIds: List<String>): List<Timestamps>
 
     @Query("SELECT COUNT(task_id) FROM tasks WHERE completed = :completed AND deadline >= :minDeadlineTime AND deadline < :maxDeadlineTime")
     fun getCountOfTasks(

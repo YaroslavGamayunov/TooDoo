@@ -14,6 +14,6 @@ class CompleteTaskUseCase @Inject constructor(
 ) : UseCase<Pair<Task, Boolean>, Unit>(dispatcher) {
     override suspend fun execute(params: Pair<Task, Boolean>) {
         val (task, completed) = params
-        taskRepository.updateTask(task.copy(isCompleted = completed))
+        taskRepository.updateTasks(listOf(task.copy(isCompleted = completed)))
     }
 }
