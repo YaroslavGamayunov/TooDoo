@@ -39,5 +39,6 @@ jobs:
         with:
           api-level: 30
           profile: Pixel 3
+          target: google_apis
           script: ./gradlew app:connectedAndroidTest
 
