@@ -29,7 +29,7 @@ object Versions {
     const val ESPRESSO_CORE = "3.3.0"
 
     const val DETEKT = "1.17.1"
-    const val TRUTH = "1.1.3"
+    const val KOTEST = "4.6.1"
 }
 
 object Dependencies {
@@ -79,7 +79,7 @@ object Dependencies {
         const val JUNIT_EXT = "androidx.test.ext:junit:${Versions.JUNIT_EXT}"
         const val ESPRESSO_CORE = "androidx.test.espresso:espresso-core:${Versions.ESPRESSO_CORE}"
         const val DETEKT = "io.gitlab.arturbosch.detekt"
-        const val TRUTH = "com.google.truth:truth:${Versions.TRUTH}"
+        const val KOTEST_ASSERTIONS = "io.kotest:kotest-assertions-core:${Versions.KOTEST}"
     }
 
     const val CORE_LIBRARY_DESUGARING =

@@ -89,7 +89,7 @@ dependencies {
 
     // Testing
     testImplementation(Dependencies.Testing.JUNIT)
-    testImplementation(Dependencies.Testing.TRUTH)
+    testImplementation(Dependencies.Testing.KOTEST_ASSERTIONS)
     androidTestImplementation(Dependencies.Testing.JUNIT_EXT)
     androidTestImplementation(Dependencies.Testing.ESPRESSO_CORE)
 

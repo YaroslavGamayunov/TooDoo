@@ -1,12 +1,12 @@
 package com.yaroslavgamayunov.toodoo.data
 
-import com.google.common.truth.Truth.assertThat
 import com.yaroslavgamayunov.toodoo.data.datasync.DefaultTaskSynchronizationStrategy
 import com.yaroslavgamayunov.toodoo.data.datasync.TaskSynchronizationAction
 import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
 import com.yaroslavgamayunov.toodoo.data.model.TaskWithTimestamps
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import com.yaroslavgamayunov.toodoo.util.TimeUtils
+import io.kotest.matchers.shouldBe
 import org.junit.Test
 import java.time.Instant
 
@@ -31,7 +31,8 @@ class DefaultSynchronizationStrategyTest {
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
         val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
-        assertThat(action).isEqualTo(TaskSynchronizationAction.DELETE)
+
+        action shouldBe TaskSynchronizationAction.DELETE
     }
 
     @Test
@@ -47,7 +48,8 @@ class DefaultSynchronizationStrategyTest {
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
         val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
-        assertThat(action).isEqualTo(TaskSynchronizationAction.DELETE)
+
+        action shouldBe TaskSynchronizationAction.DELETE
     }
 
     @Test
@@ -62,7 +64,8 @@ class DefaultSynchronizationStrategyTest {
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
         val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
-        assertThat(action).isEqualTo(TaskSynchronizationAction.ADD)
+
+        action shouldBe TaskSynchronizationAction.ADD
     }
 
     @Test
@@ -77,7 +80,8 @@ class DefaultSynchronizationStrategyTest {
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
         val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
-        assertThat(action).isEqualTo(TaskSynchronizationAction.UPDATE)
+
+        action shouldBe TaskSynchronizationAction.UPDATE
     }
 
 
@@ -93,7 +97,8 @@ class DefaultSynchronizationStrategyTest {
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
         val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
-        assertThat(action).isEqualTo(TaskSynchronizationAction.NOTHING)
+
+        action shouldBe TaskSynchronizationAction.NOTHING
     }
 
     @Test
@@ -107,7 +112,8 @@ class DefaultSynchronizationStrategyTest {
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
         val action = DefaultTaskSynchronizationStrategy(task, task, lastSynchronizationTime)
-        assertThat(action).isEqualTo(TaskSynchronizationAction.NOTHING)
+
+        action shouldBe TaskSynchronizationAction.NOTHING
     }
 
     @Test
@@ -122,7 +128,8 @@ class DefaultSynchronizationStrategyTest {
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
         val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
-        assertThat(action).isEqualTo(TaskSynchronizationAction.NOTHING)
+
+        action shouldBe TaskSynchronizationAction.NOTHING
     }
 
     @Test
@@ -137,6 +144,7 @@ class DefaultSynchronizationStrategyTest {
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
         val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
-        assertThat(action).isEqualTo(TaskSynchronizationAction.UPDATE)
+
+        action shouldBe TaskSynchronizationAction.UPDATE
     }
 }
