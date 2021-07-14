@@ -38,5 +38,6 @@ jobs:
         uses: ReactiveCircus/android-emulator-runner@v2.19.0
         with:
           api-level: 30
+          profile: Pixel 3
           script: ./gradlew app:connectedAndroidTest
 
