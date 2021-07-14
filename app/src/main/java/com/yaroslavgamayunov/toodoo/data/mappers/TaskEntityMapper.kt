@@ -3,24 +3,17 @@ package com.yaroslavgamayunov.toodoo.data.mappers
 import com.yaroslavgamayunov.toodoo.data.api.TaskApiEntity
 import com.yaroslavgamayunov.toodoo.data.db.TaskRoomEntity
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
-import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
-import com.yaroslavgamayunov.toodoo.util.taskScheduleMode
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-fun Task.toTaskRoomEntity(
-    createdAt: Instant = Instant.MIN,
-    updatedAt: Instant = Instant.MIN
-) =
+fun Task.toTaskRoomEntity() =
     TaskRoomEntity(
         taskId = taskId,
         description = description,
         isCompleted = isCompleted,
         deadline = deadline.toInstant(),
-        priority = priority,
-        createdAt = createdAt,
-        updatedAt = updatedAt
+        priority = priority
     )
 
 fun TaskRoomEntity.toTask() = Task(
@@ -28,7 +21,6 @@ fun TaskRoomEntity.toTask() = Task(
     description = description,
     isCompleted = isCompleted,
     deadline = deadline.atZone(ZoneId.systemDefault()),
-    scheduleMode = deadline.taskScheduleMode(),
     priority = priority
 )
 
@@ -47,6 +39,5 @@ fun TaskApiEntity.toTask() = Task(
     description = description,
     isCompleted = isCompleted,
     deadline = ZonedDateTime.ofInstant(Instant.ofEpochSecond(deadline), ZoneId.systemDefault()),
-    scheduleMode = Instant.ofEpochSecond(deadline).taskScheduleMode(),
     priority = priority
 )

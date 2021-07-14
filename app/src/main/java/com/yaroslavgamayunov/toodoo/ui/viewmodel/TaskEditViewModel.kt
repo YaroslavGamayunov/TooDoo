@@ -31,7 +31,6 @@ class TaskEditViewModel @Inject constructor(
             description = "",
             isCompleted = false,
             deadline = TimeUtils.maxZonedDateTime,
-            scheduleMode = TaskScheduleMode.Unspecified,
             priority = TaskPriority.None
         )
     )
@@ -60,13 +59,8 @@ class TaskEditViewModel @Inject constructor(
         editableTask.value = editableTask.value.copy(deadline = deadline)
     }
 
-    fun updateScheduleMode(scheduleMode: TaskScheduleMode) {
-        editableTask.let {
-            it.value = if (scheduleMode == TaskScheduleMode.Unspecified) it.value.copy(
-                scheduleMode = scheduleMode,
-                deadline = TimeUtils.maxZonedDateTime
-            ) else it.value.copy(scheduleMode = scheduleMode)
-        }
+    fun disableDeadline() {
+        editableTask.value = editableTask.value.copy(deadline = TimeUtils.maxZonedDateTime)
     }
 
     fun saveChanges() {

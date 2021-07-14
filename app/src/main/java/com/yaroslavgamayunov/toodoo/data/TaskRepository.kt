@@ -17,8 +17,8 @@ import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 interface TaskRepository {
-    suspend fun synchronizeLocalAndRemote()
-    val lastSynchronizationTime: Instant
+    suspend fun refreshData()
+
     fun getAllTasks(): Flow<List<Task>>
     suspend fun getTask(id: String): Task
     fun getCompletedTasks(): Flow<List<Task>>
@@ -42,7 +42,7 @@ class DefaultTaskRepository @Inject constructor(
     val context: Context
 ) : TaskRepository {
 
-    override var lastSynchronizationTime: Instant
+    var lastSynchronizationTime: Instant
         get() {
             return Instant.ofEpochSecond(
                 context.getSharedPreferences(SYNC_TIME_SP, Context.MODE_PRIVATE).getLong(
@@ -56,7 +56,7 @@ class DefaultTaskRepository @Inject constructor(
             }
         }
 
-    override suspend fun synchronizeLocalAndRemote() {
+    override suspend fun refreshData() {
         externalScope.launch {
             val lastSync = lastSynchronizationTime
             lastSynchronizationTime = Instant.now()

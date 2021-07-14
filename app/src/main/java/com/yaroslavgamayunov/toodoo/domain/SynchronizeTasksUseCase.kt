@@ -5,7 +5,6 @@ import com.yaroslavgamayunov.toodoo.di.IoDispatcher
 import com.yaroslavgamayunov.toodoo.domain.common.UseCase
 import com.yaroslavgamayunov.toodoo.util.NetworkUtils
 import kotlinx.coroutines.CoroutineDispatcher
-import java.lang.Exception
 import javax.inject.Inject
 
 class SynchronizeTasksUseCase @Inject constructor(
@@ -16,7 +15,7 @@ class SynchronizeTasksUseCase @Inject constructor(
 ) : UseCase<Unit, Boolean>(dispatcher) {
     override suspend fun execute(params: Unit): Boolean {
         return if (networkUtils.isNetworkAvailable()) {
-            taskRepository.synchronizeLocalAndRemote()
+            taskRepository.refreshData()
             true
         } else false
     }

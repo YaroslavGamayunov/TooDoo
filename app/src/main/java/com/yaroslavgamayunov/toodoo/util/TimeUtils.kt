@@ -8,13 +8,13 @@ import kotlin.math.absoluteValue
 object TimeUtils {
     val minZonedDateTime: ZonedDateTime
         get() = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(Long.MIN_VALUE),
+            Instant.ofEpochSecond(Int.MIN_VALUE.toLong()),
             ZoneId.systemDefault()
         )
 
     val maxZonedDateTime: ZonedDateTime
         get() = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(Long.MAX_VALUE),
+            Instant.ofEpochSecond(Int.MAX_VALUE.toLong()),
             ZoneId.systemDefault()
         )
 
@@ -46,15 +46,4 @@ fun Long.localToZonedDateTime(zoneId: ZoneId = ZoneId.systemDefault()): ZonedDat
 
 fun LocalDateTime.isStartOfDay(): Boolean {
     return this.toLocalTime().second == 0
-}
-
-fun Instant.taskScheduleMode(zoneId: ZoneId = ZoneId.systemDefault()): TaskScheduleMode {
-    if (this.epochSecond == TimeUtils.maxZonedDateTime.toEpochSecond()) {
-        return TaskScheduleMode.Unspecified
-    }
-    val localDateTime = ZonedDateTime.ofInstant(this, zoneId).toLocalDateTime()
-    if (localDateTime.isStartOfDay()) {
-        return TaskScheduleMode.ByDate
-    }
-    return TaskScheduleMode.ByTime
 }

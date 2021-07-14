@@ -27,14 +27,13 @@ class RemoteTaskDataSource @Inject constructor(
     }
 
     override suspend fun getAllWithTimestamps(): List<TaskWithTimestamps> {
-        return webService.getAllTasks()
-            .map {
-                TaskWithTimestamps(
-                    it.toTask(),
-                    Instant.ofEpochSecond(it.createdAt),
-                    Instant.ofEpochSecond(it.updatedAt)
-                )
-            }
+        return webService.getAllTasks().map {
+            TaskWithTimestamps(
+                it.toTask(),
+                Instant.ofEpochSecond(it.createdAt),
+                Instant.ofEpochSecond(it.updatedAt)
+            )
+        }
     }
 
     // Since api doesn't allow to get task by id I had to implement this weird slow function
@@ -60,7 +59,7 @@ class RemoteTaskDataSource @Inject constructor(
         )
     }
 
-    override suspend fun deleteAll(tasks: List<Task>) {
+    override suspend fun deleteAll(tasks: List<Task>, timeOfDelete: Instant) {
         webService.synchronizeAllChanges(
             TaskSynchronizationRequest(
                 deleted = tasks.map { it.taskId }
@@ -69,13 +68,19 @@ class RemoteTaskDataSource @Inject constructor(
     }
 
     override suspend fun synchronizeChanges(
-        addedOrUpdated: List<TaskWithTimestamps>,
+        added: List<TaskWithTimestamps>,
+        updated: List<TaskWithTimestamps>,
         deleted: List<Task>
     ) {
         webService.synchronizeAllChanges(
             TaskSynchronizationRequest(
                 deleted = deleted.map { it.taskId },
-                other = addedOrUpdated.map { it.data.toTaskApiEntity(it.createdAt, it.updatedAt) }
+                other = (added + updated).map {
+                    it.data.toTaskApiEntity(
+                        it.createdAt,
+                        it.updatedAt
+                    )
+                }
             )
         )
     }

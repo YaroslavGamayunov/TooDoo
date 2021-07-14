@@ -15,9 +15,5 @@ data class TaskRoomEntity(
     @ColumnInfo(name = "completed")
     val isCompleted: Boolean,
     val deadline: Instant,
-    @ColumnInfo(name = "created_at")
-    val createdAt: Instant,
-    @ColumnInfo(name = "updated_at")
-    val updatedAt: Instant,
     val priority: TaskPriority
 )

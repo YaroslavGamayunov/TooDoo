@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -86,6 +89,7 @@ dependencies {
 
     // Testing
     testImplementation(Dependencies.Testing.JUNIT)
+    testImplementation(Dependencies.Testing.TRUTH)
     androidTestImplementation(Dependencies.Testing.JUNIT_EXT)
     androidTestImplementation(Dependencies.Testing.ESPRESSO_CORE)
 
@@ -93,7 +97,19 @@ dependencies {
     coreLibraryDesugaring(Dependencies.CORE_LIBRARY_DESUGARING)
 }
 
-tasks.register("checkStatic") {
+tasks.withType(Test::class) {
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+        events = setOf(
+            TestLogEvent.PASSED,
+            TestLogEvent.SKIPPED,
+            TestLogEvent.FAILED
+        )
+        showStandardStreams = true
+    }
+}
+
+tasks.register("runStaticChecks") {
     group = "Verify"
     description = "Runs static checks on the build"
     dependsOn("detekt")

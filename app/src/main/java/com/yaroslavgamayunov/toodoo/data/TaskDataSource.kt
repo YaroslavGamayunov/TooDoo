@@ -1,5 +1,8 @@
 package com.yaroslavgamayunov.toodoo.data
 
+import com.yaroslavgamayunov.toodoo.data.datasync.DefaultTaskSynchronizationStrategy
+import com.yaroslavgamayunov.toodoo.data.datasync.TaskSynchronizationAction
+import com.yaroslavgamayunov.toodoo.data.datasync.TaskSynchronizationStrategy
 import com.yaroslavgamayunov.toodoo.data.model.TaskWithTimestamps
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import kotlinx.coroutines.flow.Flow
@@ -13,40 +16,42 @@ interface TaskDataSource {
 
     suspend fun addAll(tasks: List<Task>, timeOfAdd: Instant = Instant.now())
     suspend fun updateAll(tasks: List<Task>, timeOfUpdate: Instant = Instant.now())
-    suspend fun deleteAll(tasks: List<Task>)
+    suspend fun deleteAll(tasks: List<Task>, timeOfDelete: Instant = Instant.now())
 
     suspend fun synchronizeChanges(
-        addedOrUpdated: List<TaskWithTimestamps>,
-        deleted: List<Task>
+        added: List<TaskWithTimestamps>,
+        updated: List<TaskWithTimestamps>,
+        deleted: List<Task>,
     )
 }
 
 suspend fun TaskDataSource.synchronizeWith(
     target: TaskDataSource,
-    previousSynchronizationTime: Instant
+    previousSynchronizationTime: Instant,
+    taskSynchronizationStrategy: TaskSynchronizationStrategy = DefaultTaskSynchronizationStrategy
 ) {
-    val currentTasks = getAllWithTimestamps().map { it.data.taskId to it }.toMap()
+    val localTasks = getAllWithTimestamps().map { it.data.taskId to it }.toMap()
     val targetTasks = target.getAllWithTimestamps().map { it.data.taskId to it }.toMap()
 
+    val idsToSynchronize = (localTasks.keys + targetTasks.keys).toSet()
+
+    val diffList = idsToSynchronize.map { taskId -> localTasks[taskId] to targetTasks[taskId] }
+
     val deletedTasks = mutableListOf<Task>()
-    val addedOrUpdated = mutableListOf<TaskWithTimestamps>()
+    val addedTasks = mutableListOf<TaskWithTimestamps>()
+    val updatedTasks = mutableListOf<TaskWithTimestamps>()
 
-    for ((taskId, task) in currentTasks) {
-        if (!targetTasks.containsKey(taskId) && task.updatedAt < previousSynchronizationTime) {
-            deletedTasks.add(task.data)
+    for ((localTask, targetTask) in diffList) {
+        val action =
+            taskSynchronizationStrategy.invoke(localTask, targetTask, previousSynchronizationTime)
+        when (action) {
+            TaskSynchronizationAction.ADD -> addedTasks.add(targetTask!!)
+            TaskSynchronizationAction.UPDATE -> updatedTasks.add(targetTask!!)
+            TaskSynchronizationAction.DELETE -> deletedTasks.add(localTask!!.data)
+            else -> Unit
         }
     }
 
-    for ((targetTaskId, targetTask) in targetTasks.entries) {
-        if (currentTasks.containsKey(targetTaskId)) {
-            val currentTask = currentTasks[targetTaskId]!!
-            if (targetTask.updatedAt.isAfter(currentTask.updatedAt)) {
-                addedOrUpdated.add(targetTask)
-            }
-        } else {
-            addedOrUpdated.add(targetTask)
-        }
-    }
-
-    synchronizeChanges(addedOrUpdated = addedOrUpdated, deleted = deletedTasks)
+    synchronizeChanges(added = addedTasks, deleted = deletedTasks, updated = updatedTasks)
 }
+
