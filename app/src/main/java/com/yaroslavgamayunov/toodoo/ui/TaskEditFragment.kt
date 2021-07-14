@@ -28,7 +28,7 @@ import com.yaroslavgamayunov.toodoo.ui.viewmodel.TaskEditViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
 import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
 import com.yaroslavgamayunov.toodoo.util.getColoredText
-import com.yaroslavgamayunov.toodoo.util.localToZonedDateTime
+import com.yaroslavgamayunov.toodoo.util.localEpochMilliToZonedDateTime
 import com.yaroslavgamayunov.toodoo.util.simpleFormat
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -107,16 +107,18 @@ class TaskEditFragment : BaseFragment() {
                 setSelection(task.description.length)
             }
 
+            val scheduleMode = task.scheduleMode
+
             taskDeadlineTextView.text =
-                if (task.scheduleMode == TaskScheduleMode.Unspecified) ""
+                if (scheduleMode == TaskScheduleMode.Unspecified) ""
                 else task.deadline.simpleFormat(
-                    showTime = task.scheduleMode == TaskScheduleMode.ByTime
+                    showTime = scheduleMode == TaskScheduleMode.ByTime
                 )
 
             val priorities = requireActivity().resources.getStringArray(R.array.task_priorities)
             priorityTextView.text = priorities[task.priority.level]
 
-            taskTimeSwitch.isChecked = (task.scheduleMode == TaskScheduleMode.Unspecified).not()
+            taskTimeSwitch.isChecked = (scheduleMode == TaskScheduleMode.Unspecified).not()
         }
     }
 
@@ -164,7 +166,7 @@ class TaskEditFragment : BaseFragment() {
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .build()
         datePicker.addOnPositiveButtonClickListener { time ->
-            val zonedDateTime = (time / 1000).localToZonedDateTime()
+            val zonedDateTime = time.localEpochMilliToZonedDateTime()
             taskEditViewModel.updateDeadline(zonedDateTime)
 
             showTimePicker(zonedDateTime)
@@ -204,7 +206,6 @@ class TaskEditFragment : BaseFragment() {
                 }
             }
             taskEditFragmentToolbar.setNavigationOnClickListener {
-                // TODO: Show confirmation dialog
                 findNavController().navigateUp()
             }
         }

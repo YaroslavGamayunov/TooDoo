@@ -31,9 +31,9 @@ class NetworkModule {
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
-            .connectTimeout(Duration.ofSeconds(30))
-            .readTimeout(Duration.ofSeconds(30))
-            .writeTimeout(Duration.ofSeconds(30))
+            .connectTimeout(CLIENT_TIMEOUT)
+            .readTimeout(CLIENT_TIMEOUT)
+            .writeTimeout(CLIENT_TIMEOUT)
             .build()
     }
 
@@ -50,5 +50,9 @@ class NetworkModule {
     @ApplicationScoped
     fun provideTaskApiService(client: OkHttpClient, gson: Gson): TaskApiService {
         return TaskApiService.create(client, gson)
+    }
+
+    companion object {
+        val CLIENT_TIMEOUT: Duration = Duration.ofSeconds(30)
     }
 }

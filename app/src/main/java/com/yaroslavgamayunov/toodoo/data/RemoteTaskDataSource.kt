@@ -39,7 +39,7 @@ class RemoteTaskDataSource @Inject constructor(
     // Since api doesn't allow to get task by id I had to implement this weird slow function
     override suspend fun get(id: String): Task {
         return getAll().first().find { it.taskId == id }
-            ?: throw Exception("Task with id=${id} was not found on the server")
+            ?: throw TaskNotFoundOnServerException(taskId = id)
     }
 
     override suspend fun addAll(tasks: List<Task>, timeOfAdd: Instant) {
@@ -85,3 +85,6 @@ class RemoteTaskDataSource @Inject constructor(
         )
     }
 }
+
+class TaskNotFoundOnServerException(val taskId: String) :
+    Exception("Task with id=${taskId} was not found on the server")
