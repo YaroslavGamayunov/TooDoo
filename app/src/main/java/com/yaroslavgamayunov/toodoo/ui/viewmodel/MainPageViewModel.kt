@@ -6,6 +6,7 @@ import com.yaroslavgamayunov.toodoo.domain.*
 import com.yaroslavgamayunov.toodoo.domain.common.Result
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
+import com.yaroslavgamayunov.toodoo.domain.entities.withDifferentId
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -81,7 +82,7 @@ class MainPageViewModel @Inject constructor(
     fun undoDeletedTasks() {
         deletionUndoListCleaningJob?.cancel()
         viewModelScope.launch {
-            addTasksUseCase(deletionUndoList.value)
+            addTasksUseCase.invoke(deletionUndoList.value.map { it.withDifferentId() })
             deletionUndoList.value = mutableListOf()
         }
     }

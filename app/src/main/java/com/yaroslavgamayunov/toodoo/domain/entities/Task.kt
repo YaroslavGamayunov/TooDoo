@@ -4,6 +4,7 @@ import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
 import com.yaroslavgamayunov.toodoo.util.TimeUtils
 import com.yaroslavgamayunov.toodoo.util.isStartOfDay
 import java.time.ZonedDateTime
+import java.util.*
 
 data class Task(
     val taskId: String,
@@ -12,6 +13,8 @@ data class Task(
     val deadline: ZonedDateTime,
     val priority: TaskPriority
 )
+
+fun Task.withDifferentId(taskId: String = UUID.randomUUID().toString()) = this.copy(taskId = taskId)
 
 val Task.scheduleMode: TaskScheduleMode
     get() {

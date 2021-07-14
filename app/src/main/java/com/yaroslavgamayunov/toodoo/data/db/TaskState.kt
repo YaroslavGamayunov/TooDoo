@@ -37,6 +37,6 @@ sealed class TaskStateUpdate {
 
     data class DeletedAt(
         @ColumnInfo(name = "task_id") val taskId: String,
-        @ColumnInfo(name = "deleted_at") val deletedAt: Instant
+        @ColumnInfo(name = "deleted_at") val deletedAt: Instant?
     ) : TaskStateUpdate()
 }

@@ -19,9 +19,9 @@ interface TaskDataSource {
     suspend fun deleteAll(tasks: List<Task>, timeOfDelete: Instant = Instant.now())
 
     suspend fun synchronizeChanges(
-        added: List<TaskWithTimestamps>,
-        updated: List<TaskWithTimestamps>,
-        deleted: List<Task>,
+        added: List<TaskWithTimestamps> = listOf(),
+        updated: List<TaskWithTimestamps> = listOf(),
+        deleted: List<Task> = listOf(),
     )
 }
 

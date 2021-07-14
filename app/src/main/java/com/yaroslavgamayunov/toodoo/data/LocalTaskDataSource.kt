@@ -73,8 +73,10 @@ class LocalTaskDataSource @Inject constructor(
         updated: List<TaskWithTimestamps>,
         deleted: List<Task>,
     ) {
+        // Synchronizing deleted tasks
         deleteAll(deleted, Instant.now())
 
+        // Synchronizing updated tasks
         taskDatabase.withTransaction {
             taskDao.insertAll(updated.map { it.data.toTaskRoomEntity() })
             taskStateDao.updateUpdatedAt(updated.map {
@@ -85,12 +87,15 @@ class LocalTaskDataSource @Inject constructor(
             })
         }
 
+        // Synchronizing added tasks
         taskDatabase.withTransaction {
             taskDao.insertAll(added.map { it.data.toTaskRoomEntity() })
-            taskStateDao.updateCreatedAt(added.map {
-                TaskStateUpdate.CreatedAt(
-                    it.data.toTaskRoomEntity(),
-                    it.createdAt
+            taskStateDao.insertAll(added.map {
+                TaskState(
+                    task = it.data.toTaskRoomEntity(),
+                    updatedAt = it.updatedAt,
+                    createdAt = it.createdAt,
+                    deletedAt = it.deletedAt
                 )
             })
         }

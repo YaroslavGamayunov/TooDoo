@@ -42,7 +42,7 @@ class DefaultTaskRepository @Inject constructor(
     val context: Context
 ) : TaskRepository {
 
-    var lastSynchronizationTime: Instant
+    private var lastSynchronizationTime: Instant
         get() {
             return Instant.ofEpochSecond(
                 context.getSharedPreferences(SYNC_TIME_SP, Context.MODE_PRIVATE).getLong(
