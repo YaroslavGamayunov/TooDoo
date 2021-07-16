@@ -28,7 +28,7 @@ class PreferenceDelegate<T>(
         preferences.edit {
             when (value) {
                 is Long -> putLong(preferenceKey, value)
-                else -> throw TypeNotSupportedByPreferencesDelegateException(defaultValue)
+                else -> throw TypeNotSupportedByPreferencesDelegateException(value)
             }
         }
     }
@@ -38,5 +38,8 @@ class PreferenceDelegate<T>(
     }
 
     class TypeNotSupportedByPreferencesDelegateException(value: Any?) :
-        RuntimeException("Preferences delegate does not have support for $value")
+        RuntimeException(
+            "Preferences delegate does not have support for " +
+                    "${value?.let { it::class.java.name }}"
+        )
 }
