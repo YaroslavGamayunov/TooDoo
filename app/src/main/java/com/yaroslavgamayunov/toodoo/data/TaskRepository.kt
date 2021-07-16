@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.Instant
-import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 interface TaskRepository {
@@ -36,29 +34,18 @@ class DefaultTaskRepository @Inject constructor(
     @RemoteDataSource
     private val remoteTaskDataSource: TaskDataSource,
     @ApplicationCoroutineScope
-    val externalScope: CoroutineScope,
+    private val applicationScope: CoroutineScope,
     @ApplicationContext
-    val context: Context
+    private val context: Context
 ) : TaskRepository {
 
-    private var lastSynchronizationTime: Instant
-        get() {
-            return Instant.ofEpochSecond(
-                context.getSharedPreferences(SYNC_TIME_SP, Context.MODE_PRIVATE).getLong(
-                    LAST_SYNC_TIME_KEY, 0
-                )
-            )
-        }
-        set(value) {
-            context.getSharedPreferences(SYNC_TIME_SP, Context.MODE_PRIVATE).edit {
-                putLong(LAST_SYNC_TIME_KEY, value.epochSecond)
-            }
-        }
+    private var lastSynchronizationTime: Long
+            by PreferenceDelegate(context, SYNC_TIME_SP_KEY, 0)
 
     override suspend fun refreshData() {
-        externalScope.launch {
-            val lastSync = lastSynchronizationTime
-            lastSynchronizationTime = Instant.now()
+        applicationScope.launch {
+            val lastSync = Instant.ofEpochSecond(lastSynchronizationTime)
+            lastSynchronizationTime = Instant.now().epochSecond
             localTaskDataSource.synchronizeWith(remoteTaskDataSource, lastSync)
             remoteTaskDataSource.synchronizeWith(localTaskDataSource, lastSync)
         }.join()
@@ -77,23 +64,22 @@ class DefaultTaskRepository @Inject constructor(
 
     override suspend fun updateTasks(tasks: List<Task>) {
         val timeOfUpdate = Instant.now()
-        externalScope.launch { remoteTaskDataSource.updateAll(tasks, timeOfUpdate) }
-        externalScope.launch { localTaskDataSource.updateAll(tasks, timeOfUpdate) }.join()
+        applicationScope.launch { remoteTaskDataSource.updateAll(tasks, timeOfUpdate) }
+        applicationScope.launch { localTaskDataSource.updateAll(tasks, timeOfUpdate) }.join()
     }
 
     override suspend fun addTasks(tasks: List<Task>) {
         val timeOfAdd = Instant.now()
-        externalScope.launch { remoteTaskDataSource.addAll(tasks, timeOfAdd) }
-        externalScope.launch { localTaskDataSource.addAll(tasks, timeOfAdd) }.join()
+        applicationScope.launch { remoteTaskDataSource.addAll(tasks, timeOfAdd) }
+        applicationScope.launch { localTaskDataSource.addAll(tasks, timeOfAdd) }.join()
     }
 
     override suspend fun deleteTasks(tasks: List<Task>) {
-        externalScope.launch { remoteTaskDataSource.deleteAll(tasks) }
-        externalScope.launch { localTaskDataSource.deleteAll(tasks) }.join()
+        applicationScope.launch { remoteTaskDataSource.deleteAll(tasks) }
+        applicationScope.launch { localTaskDataSource.deleteAll(tasks) }.join()
     }
 
     companion object {
-        const val SYNC_TIME_SP = "sync_time_shared_preferences"
-        const val LAST_SYNC_TIME_KEY = "last_sync_time"
+        private const val SYNC_TIME_SP_KEY = "last_sync_time"
     }
 }
