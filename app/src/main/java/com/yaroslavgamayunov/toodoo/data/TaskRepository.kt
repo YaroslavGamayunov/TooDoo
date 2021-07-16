@@ -20,11 +20,10 @@ interface TaskRepository {
     suspend fun refreshData()
 
     fun getAllTasks(): Flow<List<Task>>
+    fun getAllInTimeRange(minDeadline: Instant, maxDeadline: Instant): Flow<List<Task>>
     suspend fun getTask(id: String): Task
+
     fun getCompletedTasks(): Flow<List<Task>>
-    fun getCountOfCompletedTasks(): Flow<Int>
-    fun getUncompletedTasks(): Flow<List<Task>>
-    fun getCountOfDailyTasks(): Flow<Int>
 
     suspend fun updateTasks(tasks: List<Task>)
     suspend fun addTasks(tasks: List<Task>)
@@ -67,29 +66,14 @@ class DefaultTaskRepository @Inject constructor(
 
     override fun getAllTasks(): Flow<List<Task>> = localTaskDataSource.getAll()
 
+    override fun getAllInTimeRange(minDeadline: Instant, maxDeadline: Instant): Flow<List<Task>> {
+        return localTaskDataSource.getAllInTimeRange(minDeadline, maxDeadline)
+    }
+
     override suspend fun getTask(id: String): Task = localTaskDataSource.get(id)
 
     override fun getCompletedTasks(): Flow<List<Task>> =
         localTaskDataSource.getAll().map { tasks -> tasks.filter { it.isCompleted } }
-
-    override fun getCountOfCompletedTasks(): Flow<Int> =
-        localTaskDataSource.getAll().map { tasks -> tasks.count { it.isCompleted } }
-
-    override fun getUncompletedTasks(): Flow<List<Task>> =
-        localTaskDataSource.getAll().map { tasks -> tasks.filter { it.isCompleted } }
-
-    override fun getCountOfDailyTasks(): Flow<Int> {
-        val currentDayStart = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)
-        val currentDayEnd = currentDayStart.plus(1, ChronoUnit.DAYS)
-
-        return localTaskDataSource.getAll().map { tasks ->
-            tasks.count {
-                !it.isCompleted and
-                        it.deadline.isAfter(currentDayStart) and
-                        it.deadline.isBefore(currentDayEnd)
-            }
-        }
-    }
 
     override suspend fun updateTasks(tasks: List<Task>) {
         val timeOfUpdate = Instant.now()

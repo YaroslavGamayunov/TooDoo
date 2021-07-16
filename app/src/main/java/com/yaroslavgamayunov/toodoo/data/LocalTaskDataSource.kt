@@ -6,10 +6,8 @@ import com.yaroslavgamayunov.toodoo.data.mappers.toTask
 import com.yaroslavgamayunov.toodoo.data.mappers.toTaskRoomEntity
 import com.yaroslavgamayunov.toodoo.data.model.TaskWithTimestamps
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
-import com.yaroslavgamayunov.toodoo.util.TimeUtils
+import com.yaroslavgamayunov.toodoo.util.mapList
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import java.time.Instant
 import javax.inject.Inject
 
@@ -20,11 +18,18 @@ class LocalTaskDataSource @Inject constructor(
     private val taskStateDao: TaskStateDao = taskDatabase.taskStateDao()
 
     override fun getAll(): Flow<List<Task>> {
-        return taskDao.getAll().map { tasks -> tasks.map { it.toTask() } }
+        return taskDao.getAll()
+            .mapList { it.toTask() }
     }
 
     override suspend fun getAllWithTimestamps(): List<TaskWithTimestamps> {
-        return taskStateDao.getAll().map { it.toTaskWithTimestamps() }
+        return taskStateDao.getAll()
+            .map { it.toTaskWithTimestamps() }
+    }
+
+    override fun getAllInTimeRange(minDeadline: Instant, maxDeadline: Instant): Flow<List<Task>> {
+        return taskDao.getAllInTimeRange(minDeadline = minDeadline, maxDeadline = maxDeadline)
+            .mapList { it.toTask() }
     }
 
     override suspend fun get(id: String): Task {
@@ -66,6 +71,10 @@ class LocalTaskDataSource @Inject constructor(
                 )
             })
         }
+    }
+
+    override suspend fun getCompleted(): Flow<List<Task>> {
+        return taskDao.getAllCompleted().mapList { it.toTask() }
     }
 
     override suspend fun synchronizeChanges(

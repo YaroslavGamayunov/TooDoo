@@ -15,6 +15,8 @@ class GetCountOfCompletedTasksUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) : FlowUseCase<Unit, Int>(dispatcher) {
     override fun execute(params: Unit): Flow<Result<Int>> {
-        return taskRepository.getCountOfCompletedTasks().map { Result.Success(it) }
+        return taskRepository
+            .getCompletedTasks()
+            .map { Result.Success(it.size) }
     }
 }

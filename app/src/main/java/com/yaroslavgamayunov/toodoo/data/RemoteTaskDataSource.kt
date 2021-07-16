@@ -8,10 +8,7 @@ import com.yaroslavgamayunov.toodoo.data.model.TaskWithTimestamps
 import com.yaroslavgamayunov.toodoo.di.IoDispatcher
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import java.time.Instant
 import javax.inject.Inject
 
@@ -34,6 +31,14 @@ class RemoteTaskDataSource @Inject constructor(
                 Instant.ofEpochSecond(it.updatedAt)
             )
         }
+    }
+
+    override fun getAllInTimeRange(minDeadline: Instant, maxDeadline: Instant): Flow<List<Task>> {
+        return flow {
+            emit(webService.getAllTasks()
+                .filter { it.deadline >= minDeadline.epochSecond && it.deadline < maxDeadline.epochSecond }
+                .map { it.toTask() })
+        }.flowOn(coroutineDispatcher)
     }
 
     // Since api doesn't allow to get task by id I had to implement this weird slow function
@@ -65,6 +70,11 @@ class RemoteTaskDataSource @Inject constructor(
                 deleted = tasks.map { it.taskId }
             )
         )
+    }
+
+    override suspend fun getCompleted(): Flow<List<Task>> {
+        return getAll()
+            .map { list -> list.filter { it.isCompleted } }
     }
 
     override suspend fun synchronizeChanges(

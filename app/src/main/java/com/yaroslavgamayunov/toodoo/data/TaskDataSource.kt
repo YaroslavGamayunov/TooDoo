@@ -12,11 +12,16 @@ interface TaskDataSource {
     fun getAll(): Flow<List<Task>>
     suspend fun getAllWithTimestamps(): List<TaskWithTimestamps>
 
+    /**
+     * Returns all tasks whose deadline is in [[minDeadline];[maxDeadline]) time segment (excluding right border)
+     */
+    fun getAllInTimeRange(minDeadline: Instant, maxDeadline: Instant): Flow<List<Task>>
     suspend fun get(id: String): Task
 
     suspend fun addAll(tasks: List<Task>, timeOfAdd: Instant = Instant.now())
     suspend fun updateAll(tasks: List<Task>, timeOfUpdate: Instant = Instant.now())
     suspend fun deleteAll(tasks: List<Task>, timeOfDelete: Instant = Instant.now())
+    suspend fun getCompleted(): Flow<List<Task>>
 
     suspend fun synchronizeChanges(
         added: List<TaskWithTimestamps> = listOf(),

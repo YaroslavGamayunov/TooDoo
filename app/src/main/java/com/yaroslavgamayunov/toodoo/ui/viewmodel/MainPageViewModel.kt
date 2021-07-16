@@ -21,6 +21,7 @@ class MainPageViewModel @Inject constructor(
     private val getTasksUseCase: GetTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val synchronizeTasksUseCase: SynchronizeTasksUseCase,
+    private val getCountOfDailyTasksUseCase: GetCountOfDailyTasksUseCase,
     private val addTasksUseCase: AddTasksUseCase,
     getCountOfCompletedTasksUseCase: GetCountOfCompletedTasksUseCase
 ) : ViewModel() {
@@ -60,6 +61,9 @@ class MainPageViewModel @Inject constructor(
     }
 
     init {
+        viewModelScope.launch {
+            getCountOfDailyTasksUseCase(Unit)
+        }
         collectTasks(isShowingCompletedTasks)
     }
 
