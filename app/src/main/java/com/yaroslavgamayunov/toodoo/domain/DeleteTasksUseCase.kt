@@ -10,9 +10,7 @@ import javax.inject.Inject
 class DeleteTasksUseCase @Inject constructor(
     @IoDispatcher
     dispatcher: CoroutineDispatcher,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) : UseCase<List<Task>, Unit>(dispatcher) {
-    override suspend fun execute(params: List<Task>) {
-        taskRepository.deleteTasks(params)
-    }
+    override suspend fun execute(params: List<Task>) = taskRepository.deleteTasks(params)
 }

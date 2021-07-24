@@ -1,7 +1,7 @@
 package com.yaroslavgamayunov.toodoo.data
 
-import com.yaroslavgamayunov.toodoo.data.datasync.DefaultTaskSynchronizationStrategy
-import com.yaroslavgamayunov.toodoo.data.datasync.TaskSynchronizationAction
+import com.yaroslavgamayunov.toodoo.data.datasync.DefaultTaskSyncStrategy
+import com.yaroslavgamayunov.toodoo.data.datasync.TaskSyncAction
 import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
 import com.yaroslavgamayunov.toodoo.data.model.TaskWithTimestamps
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
@@ -30,9 +30,9 @@ class DefaultSynchronizationStrategyTest {
         val target: TaskWithTimestamps? = null
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
-        val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
+        val action = DefaultTaskSyncStrategy(local, target, lastSynchronizationTime)
 
-        action shouldBe TaskSynchronizationAction.DELETE
+        action shouldBe TaskSyncAction.DELETE
     }
 
     @Test
@@ -47,9 +47,9 @@ class DefaultSynchronizationStrategyTest {
             local.copy(deletedAt = Instant.ofEpochSecond(15))
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
-        val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
+        val action = DefaultTaskSyncStrategy(local, target, lastSynchronizationTime)
 
-        action shouldBe TaskSynchronizationAction.DELETE
+        action shouldBe TaskSyncAction.DELETE
     }
 
     @Test
@@ -63,9 +63,9 @@ class DefaultSynchronizationStrategyTest {
         )
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
-        val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
+        val action = DefaultTaskSyncStrategy(local, target, lastSynchronizationTime)
 
-        action shouldBe TaskSynchronizationAction.ADD
+        action shouldBe TaskSyncAction.ADD
     }
 
     @Test
@@ -79,9 +79,9 @@ class DefaultSynchronizationStrategyTest {
         val target = local.copy(updatedAt = Instant.ofEpochSecond(15))
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
-        val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
+        val action = DefaultTaskSyncStrategy(local, target, lastSynchronizationTime)
 
-        action shouldBe TaskSynchronizationAction.UPDATE
+        action shouldBe TaskSyncAction.UPDATE
     }
 
 
@@ -96,9 +96,9 @@ class DefaultSynchronizationStrategyTest {
         val target = local.copy(updatedAt = Instant.ofEpochSecond(15))
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
-        val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
+        val action = DefaultTaskSyncStrategy(local, target, lastSynchronizationTime)
 
-        action shouldBe TaskSynchronizationAction.NOTHING
+        action shouldBe TaskSyncAction.NOTHING
     }
 
     @Test
@@ -111,9 +111,9 @@ class DefaultSynchronizationStrategyTest {
         )
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
-        val action = DefaultTaskSynchronizationStrategy(task, task, lastSynchronizationTime)
+        val action = DefaultTaskSyncStrategy(task, task, lastSynchronizationTime)
 
-        action shouldBe TaskSynchronizationAction.NOTHING
+        action shouldBe TaskSyncAction.NOTHING
     }
 
     @Test
@@ -127,9 +127,9 @@ class DefaultSynchronizationStrategyTest {
         val target = local.copy(deletedAt = Instant.ofEpochSecond(25))
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
-        val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
+        val action = DefaultTaskSyncStrategy(local, target, lastSynchronizationTime)
 
-        action shouldBe TaskSynchronizationAction.NOTHING
+        action shouldBe TaskSyncAction.NOTHING
     }
 
     @Test
@@ -143,8 +143,8 @@ class DefaultSynchronizationStrategyTest {
         val target = local.copy(updatedAt = Instant.ofEpochSecond(25), deletedAt = null)
         val lastSynchronizationTime = Instant.ofEpochSecond(10)
 
-        val action = DefaultTaskSynchronizationStrategy(local, target, lastSynchronizationTime)
+        val action = DefaultTaskSyncStrategy(local, target, lastSynchronizationTime)
 
-        action shouldBe TaskSynchronizationAction.UPDATE
+        action shouldBe TaskSyncAction.UPDATE
     }
 }

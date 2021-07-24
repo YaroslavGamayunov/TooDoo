@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -43,7 +44,7 @@ class MainPageFragment : BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_main_page, container, false)
     }
@@ -58,6 +59,7 @@ class MainPageFragment : BaseFragment() {
         setupTaskList()
         setupHeader()
         setupSnackbar()
+        setupErrorHandling()
 
         binding!!.apply {
             addTaskFab.setOnClickListener {
@@ -125,9 +127,7 @@ class MainPageFragment : BaseFragment() {
         }
         viewLifecycleOwner.lifecycleScope.launch {
             mainPageViewModel.tasks.collect {
-                it.doIfSuccess { data ->
-                    taskAdapter.submitList(data)
-                }
+                taskAdapter.submitList(it)
             }
         }
     }
@@ -172,6 +172,14 @@ class MainPageFragment : BaseFragment() {
                     )
                     snackbar.show()
                 }
+            }
+        }
+    }
+
+    private fun setupErrorHandling() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mainPageViewModel.failures.collect {
+                Toast.makeText(requireContext(), "failure=$it", Toast.LENGTH_LONG).show()
             }
         }
     }

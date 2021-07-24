@@ -10,9 +10,7 @@ import javax.inject.Inject
 class UpdateTaskUseCase @Inject constructor(
     @IoDispatcher
     dispatcher: CoroutineDispatcher,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) : UseCase<Task, Unit>(dispatcher) {
-    override suspend fun execute(params: Task) {
-        taskRepository.updateTasks(listOf(params))
-    }
+    override suspend fun execute(params: Task) = taskRepository.updateTasks(listOf(params))
 }

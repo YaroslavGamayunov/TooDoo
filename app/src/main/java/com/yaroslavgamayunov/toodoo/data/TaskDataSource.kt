@@ -1,62 +1,42 @@
 package com.yaroslavgamayunov.toodoo.data
 
-import com.yaroslavgamayunov.toodoo.data.datasync.DefaultTaskSynchronizationStrategy
-import com.yaroslavgamayunov.toodoo.data.datasync.TaskSynchronizationAction
-import com.yaroslavgamayunov.toodoo.data.datasync.TaskSynchronizationStrategy
+import com.yaroslavgamayunov.toodoo.data.datasync.TaskSyncResult
 import com.yaroslavgamayunov.toodoo.data.model.TaskWithTimestamps
+import com.yaroslavgamayunov.toodoo.domain.common.Result
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 
 interface TaskDataSource {
-    fun getAll(): Flow<List<Task>>
+    fun observeAll(): Flow<List<Task>>
     suspend fun getAllWithTimestamps(): List<TaskWithTimestamps>
 
-    /**
-     * Returns all tasks whose deadline is in [[minDeadline];[maxDeadline]) time segment (excluding right border)
-     */
-    fun getAllInTimeRange(minDeadline: Instant, maxDeadline: Instant): Flow<List<Task>>
-    suspend fun get(id: String): Task
-
-    suspend fun addAll(tasks: List<Task>, timeOfAdd: Instant = Instant.now())
-    suspend fun updateAll(tasks: List<Task>, timeOfUpdate: Instant = Instant.now())
-    suspend fun deleteAll(tasks: List<Task>, timeOfDelete: Instant = Instant.now())
-    suspend fun getCompleted(): Flow<List<Task>>
+    suspend fun addAll(parameters: TaskModificationParameters): Result<Unit>
+    suspend fun updateAll(parameters: TaskModificationParameters): Result<Unit>
+    suspend fun deleteAll(parameters: TaskModificationParameters): Result<Unit>
 
     suspend fun synchronizeChanges(
         added: List<TaskWithTimestamps> = listOf(),
         updated: List<TaskWithTimestamps> = listOf(),
         deleted: List<Task> = listOf(),
     )
+
+    suspend fun synchronizeChanges(
+        syncResult: TaskSyncResult
+    ) = synchronizeChanges(
+        added = syncResult.added,
+        updated = syncResult.updated,
+        deleted = syncResult.deleted
+    )
 }
 
-suspend fun TaskDataSource.synchronizeWith(
-    target: TaskDataSource,
-    previousSynchronizationTime: Instant,
-    taskSynchronizationStrategy: TaskSynchronizationStrategy = DefaultTaskSynchronizationStrategy
-) {
-    val localTasks = getAllWithTimestamps().map { it.data.taskId to it }.toMap()
-    val targetTasks = target.getAllWithTimestamps().map { it.data.taskId to it }.toMap()
-
-    val idsToSynchronize = (localTasks.keys + targetTasks.keys).toSet()
-
-    val diffList = idsToSynchronize.map { taskId -> localTasks[taskId] to targetTasks[taskId] }
-
-    val deletedTasks = mutableListOf<Task>()
-    val addedTasks = mutableListOf<TaskWithTimestamps>()
-    val updatedTasks = mutableListOf<TaskWithTimestamps>()
-
-    for ((localTask, targetTask) in diffList) {
-        val action =
-            taskSynchronizationStrategy.invoke(localTask, targetTask, previousSynchronizationTime)
-        when (action) {
-            TaskSynchronizationAction.ADD -> addedTasks.add(targetTask!!)
-            TaskSynchronizationAction.UPDATE -> updatedTasks.add(targetTask!!)
-            TaskSynchronizationAction.DELETE -> deletedTasks.add(localTask!!.data)
-            else -> Unit
-        }
-    }
-
-    synchronizeChanges(added = addedTasks, deleted = deletedTasks, updated = updatedTasks)
-}
-
+/**
+ * Data class holding information for one of typical [TaskDataSource]'s operations:
+ * [TaskDataSource.addAll], [TaskDataSource.updateAll], [TaskDataSource.deleteAll]
+ *
+ * Holds [tasks] to perform operation on and [time] of operation
+ */
+data class TaskModificationParameters(
+    val tasks: List<Task>,
+    val time: Instant = Instant.now()
+)

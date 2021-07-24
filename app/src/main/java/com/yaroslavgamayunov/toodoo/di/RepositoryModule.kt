@@ -12,7 +12,7 @@ abstract class RepositoryModule {
 
     @Binds
     @LocalDataSource
-    abstract fun bindLocalTaskDataSource(dataSource: LocalTaskDataSource): TaskDataSource
+    abstract fun bindLocalTaskDataSource(dataSource: DefaultLocalTaskDataSource): LocalTaskDataSource
 
     @Binds
     @RemoteDataSource

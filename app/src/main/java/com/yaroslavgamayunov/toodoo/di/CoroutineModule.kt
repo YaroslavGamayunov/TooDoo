@@ -1,12 +1,11 @@
 package com.yaroslavgamayunov.toodoo.di
 
-import android.util.Log
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.*
-import retrofit2.HttpException
-import timber.log.Timber
-import java.net.UnknownHostException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 @Module
 class CoroutineModule {
@@ -22,12 +21,5 @@ class CoroutineModule {
     @ApplicationScoped
     @ApplicationCoroutineScope
     fun provideApplicationCoroutineScope(): CoroutineScope =
-        CoroutineScope(SupervisorJob() + CoroutineExceptionHandler { _, throwable ->
-            Timber.d(throwable)
-            if (throwable is HttpException || throwable is UnknownHostException) {
-                Timber.d(throwable)
-            } else {
-                throw throwable
-            }
-        })
+        CoroutineScope(SupervisorJob())
 }

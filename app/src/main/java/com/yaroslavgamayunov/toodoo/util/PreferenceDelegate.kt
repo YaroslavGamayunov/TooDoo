@@ -1,4 +1,4 @@
-package com.yaroslavgamayunov.toodoo.data
+package com.yaroslavgamayunov.toodoo.util
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -9,7 +9,7 @@ import kotlin.reflect.KProperty
 class PreferenceDelegate<T>(
     val context: Context,
     private val preferenceKey: String,
-    private val defaultValue: T
+    private val defaultValue: T,
 ) : ReadWriteProperty<Any?, T> {
 
     private val preferences: SharedPreferences by lazy {
@@ -36,10 +36,9 @@ class PreferenceDelegate<T>(
     private companion object {
         const val SHARED_PREFERENCES_NAME = "application_preferences"
     }
-
-    class TypeNotSupportedByPreferencesDelegateException(value: Any?) :
-        RuntimeException(
-            "Preferences delegate does not have support for " +
-                    "${value?.let { it::class.java.name }}"
-        )
 }
+
+class TypeNotSupportedByPreferencesDelegateException(value: Any?) :
+    RuntimeException(
+        "Preferences delegate does not have support for ${value?.let { it::class.java.name }}"
+    )

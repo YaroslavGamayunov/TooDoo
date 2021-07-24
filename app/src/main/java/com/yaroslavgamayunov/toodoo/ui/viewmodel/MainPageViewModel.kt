@@ -2,29 +2,43 @@ package com.yaroslavgamayunov.toodoo.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yaroslavgamayunov.toodoo.di.ApplicationCoroutineScope
 import com.yaroslavgamayunov.toodoo.domain.*
-import com.yaroslavgamayunov.toodoo.domain.common.Result
+import com.yaroslavgamayunov.toodoo.domain.common.doIfError
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
+import com.yaroslavgamayunov.toodoo.domain.common.fold
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
 import com.yaroslavgamayunov.toodoo.domain.entities.withDifferentId
+import com.yaroslavgamayunov.toodoo.exception.Failure
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 class MainPageViewModel @Inject constructor(
     private val deleteTasksUseCase: DeleteTasksUseCase,
     private val getTasksUseCase: GetTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
     private val synchronizeTasksUseCase: SynchronizeTasksUseCase,
-    private val getCountOfDailyTasksUseCase: GetCountOfDailyTasksUseCase,
     private val addTasksUseCase: AddTasksUseCase,
-    getCountOfCompletedTasksUseCase: GetCountOfCompletedTasksUseCase
+    getCountOfCompletedTasksUseCase: GetCountOfCompletedTasksUseCase,
+    @ApplicationCoroutineScope
+    private val externalScope: CoroutineScope,
 ) : ViewModel() {
+    private val _tasks = MutableStateFlow<List<Task>>(listOf())
+    val tasks = _tasks.asStateFlow()
+
+    private val _failures = MutableSharedFlow<Failure>()
+    val failures = _failures.asSharedFlow()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
+    val completedTaskCount = getCountOfCompletedTasksUseCase(Unit)
+
     private val deletionUndoList = MutableStateFlow<List<Task>>(listOf())
     val deletionUndoCount = deletionUndoList.map { it.size }
 
@@ -40,14 +54,6 @@ class MainPageViewModel @Inject constructor(
             field = value
         }
 
-    private val _tasks = MutableStateFlow<Result<List<Task>>>(Result.Loading)
-    val tasks = _tasks.asStateFlow()
-
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
-
-    val completedTaskCount = getCountOfCompletedTasksUseCase(Unit)
-
     private fun collectTasks(showingCompleted: Boolean) {
         taskCollectingJob?.cancel()
         taskCollectingJob = viewModelScope.launch {
@@ -56,19 +62,18 @@ class MainPageViewModel @Inject constructor(
                     showingCompleted,
                     currentlyCompletedTaskIds
                 )
-            ).collect { _tasks.value = it }
+            ).collect { tasks ->
+                tasks.fold(onSuccess = { _tasks.value = it }, onError = ::handleFailure)
+            }
         }
     }
 
     init {
-        viewModelScope.launch {
-            getCountOfDailyTasksUseCase(Unit)
-        }
         collectTasks(isShowingCompletedTasks)
     }
 
     fun deleteTask(task: Task) {
-        viewModelScope.launch {
+        externalScope.launch {
             deleteTasksUseCase(listOf(task)).doIfSuccess {
                 deletionUndoListCleaningJob?.cancel()
                 deletionUndoListCleaningJob = viewModelScope.launch {
@@ -79,7 +84,7 @@ class MainPageViewModel @Inject constructor(
                 deletionUndoList.apply {
                     value = value.toMutableList().apply { add(task) }
                 }
-            }
+            }.doIfError(::handleFailure)
         }
     }
 
@@ -98,18 +103,22 @@ class MainPageViewModel @Inject constructor(
             currentlyCompletedTaskIds.remove(task.taskId)
         }
 
-        viewModelScope.launch {
-            completeTaskUseCase(
-                task to isCompleted
-            )
+        externalScope.launch {
+            completeTaskUseCase(task to isCompleted).doIfError(::handleFailure)
         }
     }
 
     fun refreshTasks() {
-        viewModelScope.launch {
+        externalScope.launch {
             _isRefreshing.value = true
-            synchronizeTasksUseCase.invoke(Unit)
+            synchronizeTasksUseCase.invoke(Unit).doIfError(::handleFailure)
             _isRefreshing.value = false
+        }
+    }
+
+    private fun handleFailure(failure: Failure) {
+        viewModelScope.launch {
+            _failures.emit(failure)
         }
     }
 

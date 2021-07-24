@@ -6,17 +6,17 @@ import java.time.Instant
 
 /**
  * Takes [TaskWithTimestamps] of local task and target task or null
- * if task is not presented in local or target data source respectively
- * Returns [TaskSynchronizationAction] to be done to the local source
+ * if task is not presented in local or target data source respectively,
+ * and [Instant] of last synchronization time
+ * Returns [TaskSyncAction] to be done to the local source
  */
-typealias TaskSynchronizationStrategy = (
-    localTask: TaskWithTimestamps?,
-    targetTask: TaskWithTimestamps?,
-    lastSynchronizationTime: Instant
-) -> TaskSynchronizationAction
+interface TaskSyncStrategy : (
+    TaskWithTimestamps?,
+    TaskWithTimestamps?,
+    Instant,
+) -> TaskSyncAction
 
-
-enum class TaskSynchronizationAction {
+enum class TaskSyncAction {
     /**
      * Add target task to local datasource
      */
@@ -38,10 +38,10 @@ enum class TaskSynchronizationAction {
     NOTHING
 }
 
-object DefaultTaskSynchronizationStrategy : TaskSynchronizationStrategy {
+object DefaultTaskSyncStrategy : TaskSyncStrategy {
     private fun TaskWithTimestamps?.isDeletedAfterSync(
         remote: TaskWithTimestamps,
-        lastSynchronizationTime: Instant
+        lastSynchronizationTime: Instant,
     ): Boolean {
         return (this == null && remote.createdAt < lastSynchronizationTime) ||
                 (this?.deletedAt?.let { it > lastSynchronizationTime } ?: false)
@@ -50,33 +50,33 @@ object DefaultTaskSynchronizationStrategy : TaskSynchronizationStrategy {
     override fun invoke(
         local: TaskWithTimestamps?,
         target: TaskWithTimestamps?,
-        lastSynchronizationTime: Instant
-    ): TaskSynchronizationAction {
+        lastSynchronizationTime: Instant,
+    ): TaskSyncAction {
         if (local == null && target != null) {
             val isDeletedLocally = local.isDeletedAfterSync(target, lastSynchronizationTime)
             if (!isDeletedLocally) {
-                return TaskSynchronizationAction.ADD
+                return TaskSyncAction.ADD
             }
         }
 
         if (local != null && target == null) {
             val isDeletedRemotely = target.isDeletedAfterSync(local, lastSynchronizationTime)
             if (isDeletedRemotely && !local.isDeleted) {
-                return TaskSynchronizationAction.DELETE
+                return TaskSyncAction.DELETE
             }
         }
 
         if (local != null && target != null) {
             target.deletedAt?.let {
                 if (it > lastSynchronizationTime && !local.isDeleted) {
-                    return TaskSynchronizationAction.DELETE
+                    return TaskSyncAction.DELETE
                 }
             }
 
             if (target.updatedAt > local.updatedAt) {
-                return TaskSynchronizationAction.UPDATE
+                return TaskSyncAction.UPDATE
             }
         }
-        return TaskSynchronizationAction.NOTHING
+        return TaskSyncAction.NOTHING
     }
 }

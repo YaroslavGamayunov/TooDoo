@@ -6,20 +6,27 @@ import com.yaroslavgamayunov.toodoo.data.mappers.toTask
 import com.yaroslavgamayunov.toodoo.data.mappers.toTaskApiEntity
 import com.yaroslavgamayunov.toodoo.data.model.TaskWithTimestamps
 import com.yaroslavgamayunov.toodoo.di.IoDispatcher
+import com.yaroslavgamayunov.toodoo.domain.common.Result
+import com.yaroslavgamayunov.toodoo.domain.common.catch
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
+import com.yaroslavgamayunov.toodoo.exception.resolveNetworkFailure
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.time.Instant
 import javax.inject.Inject
+
 
 class RemoteTaskDataSource @Inject constructor(
     private val webService: TaskApiService,
     @IoDispatcher
-    private val coroutineDispatcher: CoroutineDispatcher
+    private val coroutineDispatcher: CoroutineDispatcher,
 ) : TaskDataSource {
-    override fun getAll(): Flow<List<Task>> {
+    override fun observeAll(): Flow<List<Task>> {
         return flow {
-            emit(webService.getAllTasks().map { it.toTask() })
+            val tasks = webService.getAllTasks().map { it.toTask() }
+            emit(tasks)
         }.flowOn(coroutineDispatcher)
     }
 
@@ -33,68 +40,57 @@ class RemoteTaskDataSource @Inject constructor(
         }
     }
 
-    override fun getAllInTimeRange(minDeadline: Instant, maxDeadline: Instant): Flow<List<Task>> {
-        return flow {
-            emit(webService.getAllTasks()
-                .filter { it.deadline >= minDeadline.epochSecond && it.deadline < maxDeadline.epochSecond }
-                .map { it.toTask() })
-        }.flowOn(coroutineDispatcher)
+    override suspend fun addAll(parameters: TaskModificationParameters): Result<Unit> {
+        val tasksForSync =
+            parameters.tasks.map {
+                it.toTaskApiEntity(
+                    createdAt = parameters.time,
+                    updatedAt = parameters.time
+                )
+            }
+
+        return makeNetworkRequest {
+            webService.synchronizeAllChanges(TaskSynchronizationRequest(other = tasksForSync))
+        }
     }
 
-    // Since api doesn't allow to get task by id I had to implement this weird slow function
-    override suspend fun get(id: String): Task {
-        return getAll().first().find { it.taskId == id }
-            ?: throw TaskNotFoundOnServerException(taskId = id)
+    override suspend fun updateAll(parameters: TaskModificationParameters): Result<Unit> {
+        val tasksForSync =
+            parameters.tasks.map {
+                it.toTaskApiEntity(
+                    Instant.ofEpochSecond(0), parameters.time
+                )
+            }
+
+        return makeNetworkRequest {
+            webService.synchronizeAllChanges(TaskSynchronizationRequest(other = tasksForSync))
+        }
     }
 
-    override suspend fun addAll(tasks: List<Task>, timeOfAdd: Instant) {
-        webService.synchronizeAllChanges(TaskSynchronizationRequest(other = tasks.map {
-            it.toTaskApiEntity(
-                timeOfAdd,
-                timeOfAdd
+    override suspend fun deleteAll(parameters: TaskModificationParameters): Result<Unit> {
+        return makeNetworkRequest {
+            webService.synchronizeAllChanges(
+                TaskSynchronizationRequest(deleted = parameters.tasks.map { it.taskId })
             )
-        }))
-    }
-
-    override suspend fun updateAll(tasks: List<Task>, timeOfUpdate: Instant) {
-        webService.synchronizeAllChanges(
-            TaskSynchronizationRequest(
-                other = tasks.map { it.toTaskApiEntity(Instant.ofEpochSecond(0), timeOfUpdate) }
-            )
-        )
-    }
-
-    override suspend fun deleteAll(tasks: List<Task>, timeOfDelete: Instant) {
-        webService.synchronizeAllChanges(
-            TaskSynchronizationRequest(
-                deleted = tasks.map { it.taskId }
-            )
-        )
-    }
-
-    override suspend fun getCompleted(): Flow<List<Task>> {
-        return getAll()
-            .map { list -> list.filter { it.isCompleted } }
+        }
     }
 
     override suspend fun synchronizeChanges(
         added: List<TaskWithTimestamps>,
         updated: List<TaskWithTimestamps>,
-        deleted: List<Task>
+        deleted: List<Task>,
     ) {
-        webService.synchronizeAllChanges(
-            TaskSynchronizationRequest(
-                deleted = deleted.map { it.taskId },
-                other = (added + updated).map {
-                    it.data.toTaskApiEntity(
-                        it.createdAt,
-                        it.updatedAt
-                    )
-                }
-            )
+        val synchronizationRequest = TaskSynchronizationRequest(
+            deleted = deleted.map { it.taskId },
+            other = (added + updated).map { it.data.toTaskApiEntity(it.createdAt, it.updatedAt) }
         )
+
+        webService.synchronizeAllChanges(synchronizationRequest)
+    }
+
+    private suspend fun <T> makeNetworkRequest(f: suspend () -> T): Result<Unit> {
+        return Result.catch(failureResolver = ::resolveNetworkFailure) {
+            f()
+        }
     }
 }
-
-class TaskNotFoundOnServerException(val taskId: String) :
-    Exception("Task with id=${taskId} was not found on the server")

@@ -16,7 +16,8 @@ import dagger.Component
         RepositoryModule::class,
         ViewModelModule::class,
         WorkerModule::class,
-        NetworkModule::class
+        NetworkModule::class,
+        DataSyncModule::class
     ]
 )
 interface AppComponent {
