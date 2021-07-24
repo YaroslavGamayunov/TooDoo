@@ -24,5 +24,6 @@ abstract class ViewModelModule {
     abstract fun bindTaskEditViewModel(model: TaskEditViewModel): ViewModel
 
     @Binds
+    @ApplicationScoped
     abstract fun bindViewModelFactory(factory: TooDooViewModelFactory): ViewModelProvider.Factory
 }
