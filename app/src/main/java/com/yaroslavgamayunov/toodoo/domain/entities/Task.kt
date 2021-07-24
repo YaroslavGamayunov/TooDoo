@@ -14,8 +14,6 @@ data class Task(
     val priority: TaskPriority
 )
 
-fun Task.withDifferentId(taskId: String = UUID.randomUUID().toString()) = this.copy(taskId = taskId)
-
 val Task.scheduleMode: TaskScheduleMode
     get() {
         if (this.deadline.toEpochSecond() == TimeUtils.maxZonedDateTime.toEpochSecond()) {

@@ -5,10 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.yaroslavgamayunov.toodoo.di.ApplicationCoroutineScope
 import com.yaroslavgamayunov.toodoo.domain.*
 import com.yaroslavgamayunov.toodoo.domain.common.doIfError
-import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.domain.common.fold
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
-import com.yaroslavgamayunov.toodoo.domain.entities.withDifferentId
 import com.yaroslavgamayunov.toodoo.exception.Failure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -19,18 +17,14 @@ import javax.inject.Inject
 
 
 class MainPageViewModel @Inject constructor(
-    private val deleteTasksUseCase: DeleteTasksUseCase,
     private val getTasksUseCase: GetTasksUseCase,
     private val completeTaskUseCase: CompleteTaskUseCase,
+    private val deleteTasksUseCase: DeleteTasksUseCase,
     private val synchronizeTasksUseCase: SynchronizeTasksUseCase,
-    private val addTasksUseCase: AddTasksUseCase,
     getCountOfCompletedTasksUseCase: GetCountOfCompletedTasksUseCase,
     @ApplicationCoroutineScope
     private val externalScope: CoroutineScope,
 ) : ViewModel() {
-    private val _tasks = MutableStateFlow<List<Task>>(listOf())
-    val tasks = _tasks.asStateFlow()
-
     private val _failures = MutableSharedFlow<Failure>()
     val failures = _failures.asSharedFlow()
 
@@ -39,10 +33,17 @@ class MainPageViewModel @Inject constructor(
 
     val completedTaskCount = getCountOfCompletedTasksUseCase(Unit)
 
-    private val deletionUndoList = MutableStateFlow<List<Task>>(listOf())
-    val deletionUndoCount = deletionUndoList.map { it.size }
+    private var recentlyDeletedTasks = MutableStateFlow<List<Task>>(listOf())
+    val recentlyDeletedTaskCount = recentlyDeletedTasks.map { it.size }
 
-    private var deletionUndoListCleaningJob: Job? = null
+    private val allTasks = MutableStateFlow<List<Task>>(listOf())
+
+    val tasks = allTasks.combine(recentlyDeletedTasks) { allTasks, recentlyDeleted ->
+        allTasks - recentlyDeleted
+    }
+
+
+    private var recentlyDeletedTaskCleaningJob: Job? = null
     private var taskCollectingJob: Job? = null
 
     // Ids of tasks completed during interaction with main page
@@ -63,7 +64,9 @@ class MainPageViewModel @Inject constructor(
                     currentlyCompletedTaskIds
                 )
             ).collect { tasks ->
-                tasks.fold(onSuccess = { _tasks.value = it }, onError = ::handleFailure)
+                tasks.fold(onSuccess = {
+                    allTasks.value = it
+                }, onError = ::handleFailure)
             }
         }
     }
@@ -73,27 +76,20 @@ class MainPageViewModel @Inject constructor(
     }
 
     fun deleteTask(task: Task) {
-        externalScope.launch {
-            deleteTasksUseCase(listOf(task)).doIfSuccess {
-                deletionUndoListCleaningJob?.cancel()
-                deletionUndoListCleaningJob = viewModelScope.launch {
-                    delay(TASK_DELETION_UNDO_TIMEOUT)
-                    deletionUndoList.value = mutableListOf()
-                }
-
-                deletionUndoList.apply {
-                    value = value.toMutableList().apply { add(task) }
-                }
-            }.doIfError(::handleFailure)
+        recentlyDeletedTasks.apply {
+            value = value + task
+            recentlyDeletedTaskCleaningJob?.cancel()
+            recentlyDeletedTaskCleaningJob = viewModelScope.launch {
+                delay(TASK_DELETION_UNDO_TIMEOUT)
+                deleteTasksUseCase(recentlyDeletedTasks.value.toList())
+                recentlyDeletedTasks.value = mutableListOf()
+            }
         }
     }
 
     fun undoDeletedTasks() {
-        deletionUndoListCleaningJob?.cancel()
-        viewModelScope.launch {
-            addTasksUseCase.invoke(deletionUndoList.value.map { it.withDifferentId() })
-            deletionUndoList.value = mutableListOf()
-        }
+        recentlyDeletedTaskCleaningJob?.cancel()
+        recentlyDeletedTasks.value = mutableListOf()
     }
 
     fun completeTask(task: Task, isCompleted: Boolean) {
