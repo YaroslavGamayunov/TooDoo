@@ -95,7 +95,7 @@ class MorningNotificationWorker(
 
             WorkManager.getInstance(context).enqueueUniqueWork(
                 WORKER_TAG,
-                ExistingWorkPolicy.KEEP,
+                ExistingWorkPolicy.REPLACE,
                 request
             )
         }
