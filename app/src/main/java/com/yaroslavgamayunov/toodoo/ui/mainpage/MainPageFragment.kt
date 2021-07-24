@@ -159,7 +159,7 @@ class MainPageFragment : BaseFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            mainPageViewModel.deletionUndoCount.collect {
+            mainPageViewModel.recentlyDeletedTaskCount.collect {
                 if (it == 0) {
                     snackbar.dismiss()
                 } else {
