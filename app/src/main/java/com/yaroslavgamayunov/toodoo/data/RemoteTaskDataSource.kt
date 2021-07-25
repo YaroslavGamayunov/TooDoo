@@ -50,7 +50,12 @@ class RemoteTaskDataSource @Inject constructor(
             }
 
         return makeNetworkRequest {
-            webService.synchronizeAllChanges(TaskSynchronizationRequest(other = tasksForSync))
+            if (tasksForSync.size == 1) {
+                val task = tasksForSync.first()
+                webService.addTask(task)
+            } else {
+                webService.synchronizeAllChanges(TaskSynchronizationRequest(other = tasksForSync))
+            }
         }
     }
 
@@ -63,15 +68,24 @@ class RemoteTaskDataSource @Inject constructor(
             }
 
         return makeNetworkRequest {
-            webService.synchronizeAllChanges(TaskSynchronizationRequest(other = tasksForSync))
+            if (tasksForSync.size == 1) {
+                val task = tasksForSync.first()
+                webService.updateTask(task.taskId, task)
+            } else {
+                webService.synchronizeAllChanges(TaskSynchronizationRequest(other = tasksForSync))
+            }
         }
     }
 
     override suspend fun deleteAll(parameters: TaskModificationParameters): Result<Unit> {
         return makeNetworkRequest {
-            webService.synchronizeAllChanges(
-                TaskSynchronizationRequest(deleted = parameters.tasks.map { it.taskId })
-            )
+            if (parameters.tasks.size == 1) {
+                webService.deleteTask(parameters.tasks.first().taskId)
+            } else {
+                webService.synchronizeAllChanges(
+                    TaskSynchronizationRequest(deleted = parameters.tasks.map { it.taskId })
+                )
+            }
         }
     }
 
