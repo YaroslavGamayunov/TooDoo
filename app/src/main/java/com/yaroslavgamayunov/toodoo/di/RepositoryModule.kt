@@ -10,10 +10,12 @@ abstract class RepositoryModule {
     @Binds
     abstract fun bindTaskRepository(repository: DefaultTaskRepository): TaskRepository
 
+    @ApplicationScoped
     @Binds
     @LocalDataSource
     abstract fun bindLocalTaskDataSource(dataSource: DefaultLocalTaskDataSource): LocalTaskDataSource
 
+    @ApplicationScoped
     @Binds
     @RemoteDataSource
     abstract fun bindRemoteTaskDataSource(dataSource: RemoteTaskDataSource): TaskDataSource
