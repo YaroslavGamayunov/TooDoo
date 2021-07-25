@@ -9,7 +9,7 @@ interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(tasks: List<TaskRoomEntity>)
 
-    @Query("SELECT * FROM tasks ORDER BY deadline ASC, priority DESC")
+    @Query("SELECT tasks.* FROM tasks JOIN task_states ON tasks.task_id=task_states.task_id ORDER BY deadline ASC, priority DESC, created_at ASC")
     fun getAll(): Flow<List<TaskRoomEntity>>
 
     @Query("SELECT * FROM tasks WHERE task_id = :id LIMIT 1")
@@ -21,7 +21,7 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE deadline >= :minDeadline AND deadline < :maxDeadline")
     fun getAllInTimeRange(
         minDeadline: Instant,
-        maxDeadline: Instant
+        maxDeadline: Instant,
     ): Flow<List<TaskRoomEntity>>
 
     @Delete
