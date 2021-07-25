@@ -57,7 +57,7 @@ class TaskEditFragment : BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_task_edit, container, false)
     }
@@ -170,6 +170,12 @@ class TaskEditFragment : BaseFragment() {
             taskEditViewModel.updateDeadline(zonedDateTime)
 
             showTimePicker(zonedDateTime)
+        }
+
+        datePicker.addOnDismissListener {
+            if (taskEditViewModel.task.value.scheduleMode == TaskScheduleMode.Unspecified) {
+                binding!!.taskTimeSwitch.isChecked = false
+            }
         }
 
         datePicker.show(childFragmentManager, null)
