@@ -90,6 +90,8 @@ dependencies {
     // Testing
     testImplementation(Dependencies.Testing.JUNIT)
     testImplementation(Dependencies.Testing.KOTEST_ASSERTIONS)
+    testImplementation(Dependencies.Testing.COROUTINES_TEST)
+    testImplementation(Dependencies.Testing.MOCKK)
     androidTestImplementation(Dependencies.Testing.JUNIT_EXT)
     androidTestImplementation(Dependencies.Testing.ESPRESSO_CORE)
 

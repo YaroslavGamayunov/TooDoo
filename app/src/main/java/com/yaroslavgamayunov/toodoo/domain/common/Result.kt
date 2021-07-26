@@ -92,6 +92,6 @@ suspend infix fun <T, U> Result<T>.tee(f: suspend (T) -> Result<U>): Result<T> =
  *
  * ```
  */
-fun <T>  toResultUnit(): suspend (T) -> Result.Success<Unit> = {
+fun <T> toResultUnit(): suspend (T) -> Result.Success<Unit> = {
     Result.Success(Unit)
 }

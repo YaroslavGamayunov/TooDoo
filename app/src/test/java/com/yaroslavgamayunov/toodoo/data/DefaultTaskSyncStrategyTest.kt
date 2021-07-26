@@ -10,7 +10,7 @@ import io.kotest.matchers.shouldBe
 import org.junit.Test
 import java.time.Instant
 
-class DefaultSynchronizationStrategyTest {
+class DefaultTaskSyncStrategyTest {
     private fun createTestTask() = Task(
         "id", "",
         false,

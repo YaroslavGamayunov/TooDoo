@@ -30,6 +30,7 @@ object Versions {
 
     const val DETEKT = "1.17.1"
     const val KOTEST = "4.6.1"
+    const val MOCKK = "1.4.1"
 }
 
 object Dependencies {
@@ -80,6 +81,9 @@ object Dependencies {
         const val ESPRESSO_CORE = "androidx.test.espresso:espresso-core:${Versions.ESPRESSO_CORE}"
         const val DETEKT = "io.gitlab.arturbosch.detekt"
         const val KOTEST_ASSERTIONS = "io.kotest:kotest-assertions-core:${Versions.KOTEST}"
+        const val COROUTINES_TEST =
+            "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.COROUTINES}"
+        const val MOCKK = "io.mockk:mockk:${Versions.MOCKK}"
     }
 
     const val CORE_LIBRARY_DESUGARING =
