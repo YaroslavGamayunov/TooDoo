@@ -93,6 +93,7 @@ dependencies {
     testImplementation(Dependencies.Testing.COROUTINES_TEST)
     testImplementation(Dependencies.Testing.MOCKK)
     androidTestImplementation(Dependencies.Testing.JUNIT_EXT)
+    androidTestImplementation(Dependencies.Testing.MOCKK_ANDROID)
     androidTestImplementation(Dependencies.Testing.ESPRESSO_CORE)
 
     // Core library desugaring

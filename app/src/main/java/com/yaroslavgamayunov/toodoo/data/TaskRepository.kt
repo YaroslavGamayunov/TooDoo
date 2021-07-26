@@ -1,8 +1,6 @@
 package com.yaroslavgamayunov.toodoo.data
 
-import android.content.Context
 import com.yaroslavgamayunov.toodoo.data.datasync.TaskSyncer
-import com.yaroslavgamayunov.toodoo.di.ApplicationContext
 import com.yaroslavgamayunov.toodoo.di.LocalDataSource
 import com.yaroslavgamayunov.toodoo.di.RemoteDataSource
 import com.yaroslavgamayunov.toodoo.domain.common.Result
@@ -37,12 +35,11 @@ class DefaultTaskRepository @Inject constructor(
     @RemoteDataSource
     private val remoteTaskDataSource: TaskDataSource,
     private val taskSyncer: TaskSyncer,
-    @ApplicationContext
-    private val context: Context,
+    preferenceHelper: PreferenceHelper,
 ) : TaskRepository {
 
     private var lastSynchronizationTime: Long
-            by PreferenceDelegate(context, SYNC_TIME_PREFERENCE_KEY, 0)
+            by PreferenceDelegate(preferenceHelper, SYNC_TIME_PREFERENCE_KEY, 0)
 
     override suspend fun refreshData(): Result<Unit> {
         return Result.catch(failureResolver = { Failure.SynchronizationError }) {

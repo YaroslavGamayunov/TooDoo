@@ -30,7 +30,7 @@ object Versions {
 
     const val DETEKT = "1.17.1"
     const val KOTEST = "4.6.1"
-    const val MOCKK = "1.4.1"
+    const val MOCKK = "1.12.0"
 }
 
 object Dependencies {
@@ -84,6 +84,7 @@ object Dependencies {
         const val COROUTINES_TEST =
             "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.COROUTINES}"
         const val MOCKK = "io.mockk:mockk:${Versions.MOCKK}"
+        const val MOCKK_ANDROID = "io.mockk:mockk-android:${Versions.MOCKK}"
     }
 
     const val CORE_LIBRARY_DESUGARING =
