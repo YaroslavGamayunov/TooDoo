@@ -31,6 +31,7 @@ object Versions {
     const val DETEKT = "1.17.1"
     const val KOTEST = "4.6.1"
     const val MOCKK = "1.12.0"
+    const val JACOCO = "0.8.7"
 }
 
 object Dependencies {

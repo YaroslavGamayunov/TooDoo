@@ -7,6 +7,7 @@ plugins {
     kotlin("kapt")
     id("kotlin-android")
     id("androidx.navigation.safeargs.kotlin")
+    jacoco
 }
 
 android {
@@ -31,6 +32,10 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            isTestCoverageEnabled = true
+        }
+
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(
@@ -100,6 +105,59 @@ dependencies {
     coreLibraryDesugaring(Dependencies.CORE_LIBRARY_DESUGARING)
 }
 
+jacoco {
+    toolVersion = Versions.JACOCO
+}
+
+tasks.register("jacocoTestReport", JacocoReport::class) {
+    reports {
+        xml.isEnabled = true
+        html.isEnabled = true
+    }
+
+    val fileFilter = setOf(
+        "**/R.class",
+        "**/R\$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*",
+        "**/*\$Lambda$*.*",
+        "**/*\$inlined$*.*"
+    )
+
+    val classDirectoriesTree =
+        fileTree(project.buildDir) {
+            include(
+                "**/classes/**/main/**",
+                "**/intermediates/classes/debug/**",
+                "**/intermediates/javac/debug/*/classes/**",
+                "**/tmp/kotlin-classes/debug/**")
+
+            exclude(fileFilter)
+        }
+
+    val sourceDirectoriesTree = fileTree(project.buildDir) {
+        include(
+            "src/main/java/**",
+            "src/main/kotlin/**",
+            "src/debug/java/**",
+            "src/debug/kotlin/**"
+        )
+    }
+
+    val executionDataTree = fileTree(project.buildDir) {
+        include("outputs/code_coverage/**/*.ec",
+            "jacoco/jacocoTestReportDebug.exec",
+            "jacoco/testDebugUnitTest.exec",
+            "jacoco/test.exec")
+    }
+
+    sourceDirectories.setFrom(sourceDirectoriesTree)
+    classDirectories.setFrom(classDirectoriesTree)
+    executionData.setFrom(executionDataTree)
+}
+
 tasks.withType(Test::class) {
     testLogging {
         exceptionFormat = TestExceptionFormat.FULL
@@ -111,6 +169,8 @@ tasks.withType(Test::class) {
         showStandardStreams = true
     }
 }
+
+
 
 tasks.register("runStaticChecks") {
     group = "Verify"
