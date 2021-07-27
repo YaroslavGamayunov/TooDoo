@@ -40,4 +40,13 @@ jobs:
           api-level: 30
           target: google_apis
           script: ./gradlew app:connectedAndroidTest
+          
+      - name: Generate test reports
+        run: ./gradlew jacocoTestReport
+          
+      - name: Upload test reports     
+        uses: codecov/codecov-action@v1
+        with:
+           token: ${{ secrets.CODECOV_TOKEN }} 
+           file: build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
 
