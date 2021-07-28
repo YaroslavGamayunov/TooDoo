@@ -7,7 +7,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoSet
 
-@Module(includes = [AppModule::class])
+@Module
 abstract class WorkerModule {
     @Binds
     @IntoSet

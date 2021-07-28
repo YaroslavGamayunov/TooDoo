@@ -10,8 +10,12 @@ import com.yaroslavgamayunov.toodoo.work.TooDooWorkerFactory
 import timber.log.Timber
 import javax.inject.Inject
 
-class TooDooApplication : Application(), Configuration.Provider {
-    val appComponent: AppComponent by lazy {
+interface AppComponentProvider {
+    val appComponent: AppComponent
+}
+
+class TooDooApplication : Application(), Configuration.Provider, AppComponentProvider {
+    override val appComponent: AppComponent by lazy {
         DaggerAppComponent.factory().create(this)
     }
 

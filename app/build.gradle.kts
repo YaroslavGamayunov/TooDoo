@@ -22,7 +22,7 @@ android {
         versionName(Config.VERSION_NAME)
 
         multiDexEnabled = true
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.yaroslavgamayunov.toodoo.TooDooAndroidTestRunner"
 
         buildConfigField(
             "String",
@@ -97,6 +97,10 @@ dependencies {
     testImplementation(Dependencies.Testing.KOTEST_ASSERTIONS)
     testImplementation(Dependencies.Testing.COROUTINES_TEST)
     testImplementation(Dependencies.Testing.MOCKK)
+
+    kaptAndroidTest(Dependencies.DI.DAGGER_COMPILER)
+    androidTestImplementation(Dependencies.Testing.MOCKWEBSERVER)
+    androidTestImplementation(Dependencies.Testing.ESPRESSO_CONTRIB)
     androidTestImplementation(Dependencies.Testing.JUNIT_EXT)
     androidTestImplementation(Dependencies.Testing.MOCKK_ANDROID)
     androidTestImplementation(Dependencies.Testing.ESPRESSO_CORE)

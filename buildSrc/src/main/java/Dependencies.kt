@@ -26,12 +26,13 @@ object Versions {
 
     const val JUNIT = "4.13.2"
     const val JUNIT_EXT = "1.1.2"
-    const val ESPRESSO_CORE = "3.3.0"
+    const val ESPRESSO = "3.3.0"
 
     const val DETEKT = "1.17.1"
     const val KOTEST = "4.6.1"
     const val MOCKK = "1.12.0"
     const val JACOCO = "0.8.7"
+    const val MOCKWEBSERVER = "4.9.1"
 }
 
 object Dependencies {
@@ -79,13 +80,16 @@ object Dependencies {
     object Testing {
         const val JUNIT = "junit:junit:${Versions.JUNIT}"
         const val JUNIT_EXT = "androidx.test.ext:junit:${Versions.JUNIT_EXT}"
-        const val ESPRESSO_CORE = "androidx.test.espresso:espresso-core:${Versions.ESPRESSO_CORE}"
+        const val ESPRESSO_CORE = "androidx.test.espresso:espresso-core:${Versions.ESPRESSO}"
+        const val ESPRESSO_CONTRIB = "androidx.test.espresso:espresso-contrib:${Versions.ESPRESSO}"
+
         const val DETEKT = "io.gitlab.arturbosch.detekt"
         const val KOTEST_ASSERTIONS = "io.kotest:kotest-assertions-core:${Versions.KOTEST}"
         const val COROUTINES_TEST =
             "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.COROUTINES}"
         const val MOCKK = "io.mockk:mockk:${Versions.MOCKK}"
         const val MOCKK_ANDROID = "io.mockk:mockk-android:${Versions.MOCKK}"
+        const val MOCKWEBSERVER = "com.squareup.okhttp3:mockwebserver:${Versions.MOCKWEBSERVER}"
     }
 
     const val CORE_LIBRARY_DESUGARING =

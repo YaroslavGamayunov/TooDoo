@@ -13,12 +13,12 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.yaroslavgamayunov.toodoo.R
-import com.yaroslavgamayunov.toodoo.TooDooApplication
 import com.yaroslavgamayunov.toodoo.databinding.FragmentMainPageBinding
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.ui.base.BaseFragment
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.MainPageViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
+import com.yaroslavgamayunov.toodoo.util.appComponent
 import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -36,7 +36,7 @@ class MainPageFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity().application as TooDooApplication).appComponent.inject(this)
+        requireActivity().application.appComponent!!.inject(this)
 
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)

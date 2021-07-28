@@ -4,7 +4,7 @@ import com.yaroslavgamayunov.toodoo.data.*
 import dagger.Binds
 import dagger.Module
 
-@Module(includes = [AppModule::class, CoroutineModule::class])
+@Module
 abstract class RepositoryModule {
     @ApplicationScoped
     @Binds

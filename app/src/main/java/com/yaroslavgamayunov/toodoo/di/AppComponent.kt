@@ -14,6 +14,7 @@ import dagger.Component
     modules = [
         AppModule::class,
         RepositoryModule::class,
+        CoroutineModule::class,
         ViewModelModule::class,
         WorkerModule::class,
         NetworkModule::class,

@@ -17,7 +17,6 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.yaroslavgamayunov.toodoo.R
-import com.yaroslavgamayunov.toodoo.TooDooApplication
 import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
 import com.yaroslavgamayunov.toodoo.databinding.FragmentTaskEditBinding
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
@@ -26,10 +25,7 @@ import com.yaroslavgamayunov.toodoo.domain.entities.scheduleMode
 import com.yaroslavgamayunov.toodoo.ui.base.BaseFragment
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TaskEditViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
-import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
-import com.yaroslavgamayunov.toodoo.util.getColoredText
-import com.yaroslavgamayunov.toodoo.util.localEpochMilliToZonedDateTime
-import com.yaroslavgamayunov.toodoo.util.simpleFormat
+import com.yaroslavgamayunov.toodoo.util.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -49,7 +45,7 @@ class TaskEditFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity().application as TooDooApplication).appComponent.inject(this)
+        requireActivity().application.appComponent!!.inject(this)
 
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
         returnTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
