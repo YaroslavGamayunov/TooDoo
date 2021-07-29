@@ -1,6 +1,7 @@
 package com.yaroslavgamayunov.toodoo
 
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -8,7 +9,10 @@ import com.yaroslavgamayunov.toodoo.pageobjects.MainPage
 import com.yaroslavgamayunov.toodoo.ui.MainActivity
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.Matchers.allOf
-import org.junit.*
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -40,5 +44,14 @@ class MainPageTest {
         )
 
         MainPage.checkListItem(0, hasCheckedCheckBox)
+    }
+
+    @Test
+    fun testMainPage_taskItemDisappears_whenSwipedLeft() {
+        val taskMatcher = hasDescendant(allOf(withText("Delete"), isDisplayed()))
+
+        MainPage.checkItemPresence(taskMatcher, isPresent = true)
+        MainPage.performActionsOnTaskListItem("Delete", swipeLeft())
+        MainPage.checkItemPresence(taskMatcher, isPresent = false)
     }
 }

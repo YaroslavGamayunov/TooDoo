@@ -58,6 +58,10 @@ android {
         languageVersion = "1.5"
         jvmTarget = "1.8"
     }
+
+    testOptions {
+        animationsDisabled = true
+    }
 }
 
 dependencies {

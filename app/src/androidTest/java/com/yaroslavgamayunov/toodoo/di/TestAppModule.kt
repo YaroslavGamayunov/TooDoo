@@ -14,6 +14,7 @@ class TestAppModule {
     @ApplicationScoped
     @Provides
     fun provideTaskDatabase(@ApplicationContext context: Context): TaskDatabase {
+        context.deleteDatabase(TaskDatabase.NAME)
         return Room.databaseBuilder(context, TaskDatabase::class.java, TaskDatabase.NAME)
             .addTypeConverter(TimeConverter())
             .addTypeConverter(PriorityConverter())
