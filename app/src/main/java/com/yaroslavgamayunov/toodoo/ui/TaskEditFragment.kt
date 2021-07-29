@@ -85,10 +85,8 @@ class TaskEditFragment : BaseFragment() {
                 showTaskDeletionDialog()
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            taskEditViewModel.task.collect {
-                updateLayout(it)
-            }
+        taskEditViewModel.task.collectIn(viewLifecycleOwner) {
+            updateLayout(it)
         }
         args.taskId?.let {
             taskEditViewModel.loadTaskForEditing(it)

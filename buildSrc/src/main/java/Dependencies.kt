@@ -14,6 +14,7 @@ object Versions {
     const val FRAGMENT = "1.3.4"
     const val NAVIGATION = "2.3.5"
     const val WORK = "2.5.0"
+    const val LIFECYCLE_KTX = "2.4.0-alpha02"
 
     const val RETROFIT = "2.9.0"
     const val LOGGING_INTERCEPTOR = "4.9.1"
@@ -70,6 +71,8 @@ object Dependencies {
         const val GSON = "com.google.code.gson:gson:${Versions.GSON}"
         const val GSON_CONVERTER = "com.squareup.retrofit2:converter-gson:${Versions.RETROFIT}"
         const val TIMBER = "com.jakewharton.timber:timber:${Versions.TIMBER}"
+        const val LIFECYCLE_KTX =
+            "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.LIFECYCLE_KTX}"
     }
 
     object DI {

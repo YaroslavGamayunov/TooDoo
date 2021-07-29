@@ -91,6 +91,7 @@ dependencies {
     implementation(Dependencies.Android.GSON)
     implementation(Dependencies.Android.GSON_CONVERTER)
     implementation(Dependencies.Android.TIMBER)
+    implementation(Dependencies.Android.LIFECYCLE_KTX)
 
     // DI
     implementation(Dependencies.DI.DAGGER)

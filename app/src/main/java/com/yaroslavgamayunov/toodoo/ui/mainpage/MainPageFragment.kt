@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.snackbar.Snackbar
@@ -19,11 +18,8 @@ import com.yaroslavgamayunov.toodoo.ui.base.BaseFragment
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.MainPageViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
 import com.yaroslavgamayunov.toodoo.util.appComponent
+import com.yaroslavgamayunov.toodoo.util.collectIn
 import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MainPageFragment : BaseFragment() {
@@ -88,12 +84,8 @@ class MainPageFragment : BaseFragment() {
                 mainPageAppbarLayout.setExpanded(true)
             }
 
-            viewLifecycleOwner.lifecycleScope.launch {
-                mainPageViewModel.isRefreshing.collect {
-                    withContext(Dispatchers.Main) {
-                        mainPageSwipeRefreshLayout.isRefreshing = it
-                    }
-                }
+            mainPageViewModel.isRefreshing.collectIn(viewLifecycleOwner) {
+                mainPageSwipeRefreshLayout.isRefreshing = it
             }
 
             mainPageSwipeRefreshLayout.setOnRefreshListener {
@@ -125,24 +117,21 @@ class MainPageFragment : BaseFragment() {
                 attachToRecyclerView(taskRecyclerView)
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            mainPageViewModel.tasks.collect {
-                taskAdapter.submitList(it)
-            }
+
+        mainPageViewModel.tasks.collectIn(viewLifecycleOwner) {
+            taskAdapter.submitList(it)
         }
     }
 
     private fun setupHeader() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            mainPageViewModel.completedTaskCount.collect { result ->
-                result.doIfSuccess {
-                    binding!!.completedTaskCountTextView.text =
-                        requireActivity().resources.getQuantityString(
-                            R.plurals.completed_task_count,
-                            it,
-                            it
-                        )
-                }
+        mainPageViewModel.completedTaskCount.collectIn(viewLifecycleOwner) { result ->
+            result.doIfSuccess {
+                binding!!.completedTaskCountTextView.text =
+                    requireActivity().resources.getQuantityString(
+                        R.plurals.completed_task_count,
+                        it,
+                        it
+                    )
             }
         }
     }
@@ -158,29 +147,25 @@ class MainPageFragment : BaseFragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            mainPageViewModel.recentlyDeletedTaskCount.collect {
-                if (it == 0) {
-                    snackbar.dismiss()
-                } else {
-                    snackbar.setText(
-                        requireActivity().resources.getQuantityString(
-                            R.plurals.deleted_task_count,
-                            it,
-                            it
-                        )
+        mainPageViewModel.recentlyDeletedTaskCount.collectIn(viewLifecycleOwner) {
+            if (it == 0) {
+                snackbar.dismiss()
+            } else {
+                snackbar.setText(
+                    requireActivity().resources.getQuantityString(
+                        R.plurals.deleted_task_count,
+                        it,
+                        it
                     )
-                    snackbar.show()
-                }
+                )
+                snackbar.show()
             }
         }
     }
 
     private fun setupErrorHandling() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            mainPageViewModel.failures.collect {
-                Toast.makeText(requireContext(), "failure=$it", Toast.LENGTH_LONG).show()
-            }
+        mainPageViewModel.failures.collectIn(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), "failure=$it", Toast.LENGTH_LONG).show()
         }
     }
 }
