@@ -2,75 +2,80 @@ package com.yaroslavgamayunov.toodoo.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.AddTasksUseCase
-import com.yaroslavgamayunov.toodoo.domain.DeleteTaskUseCase
+import com.yaroslavgamayunov.toodoo.domain.DeleteTasksUseCase
 import com.yaroslavgamayunov.toodoo.domain.GetSingleTaskByIdUseCase
-import com.yaroslavgamayunov.toodoo.domain.common.Result
+import com.yaroslavgamayunov.toodoo.domain.UpdateTaskUseCase
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
-import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
+import com.yaroslavgamayunov.toodoo.util.TimeUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.Instant
+import java.time.ZonedDateTime
+import java.util.*
 import javax.inject.Inject
 
 class TaskEditViewModel @Inject constructor(
     private val addTasksUseCase: AddTasksUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
     private val getSingleTaskByIdUseCase: GetSingleTaskByIdUseCase,
-    private val deleteTaskUseCase: DeleteTaskUseCase
+    private val deleteTasksUseCase: DeleteTasksUseCase
 ) : ViewModel() {
 
-    private var _editableTask = MutableStateFlow(
+    private var editableTask = MutableStateFlow(
         Task(
-            taskId = 0,
+            taskId = UUID.randomUUID().toString(),
             description = "",
             isCompleted = false,
-            deadline = Instant.MAX,
-            scheduleMode = TaskScheduleMode.Unspecified,
+            deadline = TimeUtils.maxZonedDateTime,
             priority = TaskPriority.None
         )
     )
 
-    val task get() = _editableTask.asStateFlow()
+    val task get() = editableTask.asStateFlow()
+    private var isNewTaskCreated = true
 
-    fun loadTaskForEditing(id: Int) {
+    fun loadTaskForEditing(id: String) {
         viewModelScope.launch {
             getSingleTaskByIdUseCase(id).doIfSuccess {
-                _editableTask.value = it
+                isNewTaskCreated = false
+                editableTask.value = it
             }
         }
     }
 
     fun updateDescription(description: String) {
-        _editableTask.value = _editableTask.value.copy(description = description)
+        editableTask.value = editableTask.value.copy(description = description)
     }
 
     fun updatePriority(priority: TaskPriority) {
-        _editableTask.value = _editableTask.value.copy(priority = priority)
+        editableTask.value = editableTask.value.copy(priority = priority)
     }
 
-    fun updateDeadline(deadline: Instant) {
-        _editableTask.value = _editableTask.value.copy(deadline = deadline)
+    fun updateDeadline(deadline: ZonedDateTime) {
+        editableTask.value = editableTask.value.copy(deadline = deadline)
     }
 
-    fun updateScheduleMode(scheduleMode: TaskScheduleMode) {
-        _editableTask.let {
-            it.value = if (scheduleMode == TaskScheduleMode.Unspecified) it.value.copy(
-                scheduleMode = scheduleMode,
-                deadline = Instant.MAX
-            ) else it.value.copy(scheduleMode = scheduleMode)
-        }
+    fun disableDeadline() {
+        editableTask.value = editableTask.value.copy(deadline = TimeUtils.maxZonedDateTime)
     }
 
     fun saveChanges() {
-        viewModelScope.launch { addTasksUseCase(listOf(_editableTask.value)) }
+        viewModelScope.launch {
+            if (isNewTaskCreated) {
+                addTasksUseCase(listOf(editableTask.value))
+            } else {
+                updateTaskUseCase(editableTask.value)
+            }
+        }
     }
 
     fun deleteTask() {
         viewModelScope.launch {
-            deleteTaskUseCase(_editableTask.value)
+            deleteTasksUseCase(listOf(editableTask.value))
         }
     }
 }

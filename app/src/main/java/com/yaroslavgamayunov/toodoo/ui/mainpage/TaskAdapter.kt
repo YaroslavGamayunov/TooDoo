@@ -3,7 +3,9 @@ package com.yaroslavgamayunov.toodoo.ui.mainpage
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StrikethroughSpan
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -11,14 +13,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.yaroslavgamayunov.toodoo.R
+import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.entities.Task
-import com.yaroslavgamayunov.toodoo.domain.entities.TaskPriority
 import com.yaroslavgamayunov.toodoo.domain.entities.TaskScheduleMode
-import com.yaroslavgamayunov.toodoo.util.formatDate
+import com.yaroslavgamayunov.toodoo.domain.entities.scheduleMode
 import com.yaroslavgamayunov.toodoo.util.getColorFromAttrs
 import com.yaroslavgamayunov.toodoo.util.getColorStateListCompat
 import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
-import java.time.Instant
+import com.yaroslavgamayunov.toodoo.util.simpleFormat
+import java.time.ZonedDateTime
 
 class TaskAdapter(
     private val onTaskCheck: (Task) -> Unit,
@@ -87,12 +90,12 @@ class TaskAdapter(
                 taskDeadlineTextView.visibility = View.GONE
             } else {
                 taskDeadlineTextView.visibility = View.VISIBLE
-                taskDeadlineTextView.text = task.deadline.formatDate(
-                    showTime = task.scheduleMode == TaskScheduleMode.ExactTime
+                taskDeadlineTextView.text = task.deadline.simpleFormat(
+                    showTime = task.scheduleMode == TaskScheduleMode.ByTime
                 )
             }
 
-            checkBox.buttonTintList = if (task.deadline.isBefore(Instant.now())) {
+            checkBox.buttonTintList = if (task.deadline.isBefore(ZonedDateTime.now())) {
                 itemView.context.getColorStateListCompat(R.color.checkbox_button_tint_outdated)
             } else {
                 itemView.context.getColorStateListCompat(R.color.checkbox_button_tint_normal)

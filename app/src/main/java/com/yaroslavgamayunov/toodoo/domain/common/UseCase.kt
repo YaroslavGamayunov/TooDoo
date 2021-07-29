@@ -1,20 +1,21 @@
 package com.yaroslavgamayunov.toodoo.domain.common
 
+import com.yaroslavgamayunov.toodoo.exception.Failure
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import java.lang.Exception
+import timber.log.Timber
 
 abstract class UseCase<in P, out R>(private val coroutineDispatcher: CoroutineDispatcher) {
     suspend operator fun invoke(params: P): Result<R> {
         return try {
             withContext(coroutineDispatcher) {
-                val data = execute(params)
-                Result.Success(data)
+                execute(params)
             }
         } catch (e: Exception) {
-            Result.Error(e)
+            Timber.d(e.cause)
+            Result.Error(Failure.Unknown(e))
         }
     }
 
-    protected abstract suspend fun execute(params: P): R
+    protected abstract suspend fun execute(params: P): Result<R>
 }

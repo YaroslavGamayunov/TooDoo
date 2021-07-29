@@ -19,6 +19,13 @@
     <string name="task_deletion_dialog_title">Удалить задачу?</string>
     <string name="cancel">Отмена</string>
 
+    <!-- Notifications !-->
+    <string name="daily_tasks_notification_channel_title">Утреннее уведомление о предстоящих задачах</string>
+    <string name="daily_tasks_notification_title">Задачи на сегодня</string>
+
+    <string name="task_sync_notification_channel_title">Уведомление о синхронизации с сервером</string>
+    <string name="task_sync_notification_title">Синхронизация задач с сервером…</string>
+
     <plurals name="completed_task_count">
         <item quantity="one">Выполнена %d задача</item>
         <item quantity="few">Выполнено %d задачи</item>
@@ -32,4 +39,12 @@
         <item quantity="many">Удалено %d задач</item>
         <item quantity="other">Удалено %d задач</item>
     </plurals>
+
+    <plurals name="dont_forget_to_complete_tasks">
+        <item quantity="one">Сегодня вам нужно сделать %d задачу, не забудьте!</item>
+        <item quantity="few">Сегодня вам нужно сделать %d задачи, не забудьте!</item>
+        <item quantity="many">Сегодня вам нужно сделать %d задач, не забудьте!</item>
+        <item quantity="other">Сегодня вам нужно сделать %d задач, не забудьте</item>
+    </plurals>
+
 </resources>

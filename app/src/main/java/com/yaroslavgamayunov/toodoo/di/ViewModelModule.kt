@@ -11,16 +11,7 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import kotlin.reflect.KClass
 
-@Target(
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER
-)
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-@MapKey
-internal annotation class ViewModelKey(val key: KClass<out ViewModel>)
-
-@Module(includes = [UseCaseModule::class])
+@Module
 abstract class ViewModelModule {
     @Binds
     @IntoMap
@@ -33,5 +24,6 @@ abstract class ViewModelModule {
     abstract fun bindTaskEditViewModel(model: TaskEditViewModel): ViewModel
 
     @Binds
+    @ApplicationScoped
     abstract fun bindViewModelFactory(factory: TooDooViewModelFactory): ViewModelProvider.Factory
 }

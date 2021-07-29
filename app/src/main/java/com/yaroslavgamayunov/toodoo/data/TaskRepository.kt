@@ -1,61 +1,103 @@
 package com.yaroslavgamayunov.toodoo.data
 
-import com.yaroslavgamayunov.toodoo.data.db.TaskDao
-import com.yaroslavgamayunov.toodoo.data.db.TaskDatabase
-import com.yaroslavgamayunov.toodoo.data.db.TaskEntity
-import kotlinx.coroutines.CoroutineScope
+import com.yaroslavgamayunov.toodoo.data.datasync.TaskSyncer
+import com.yaroslavgamayunov.toodoo.di.LocalDataSource
+import com.yaroslavgamayunov.toodoo.di.RemoteDataSource
+import com.yaroslavgamayunov.toodoo.domain.common.Result
+import com.yaroslavgamayunov.toodoo.domain.common.catch
+import com.yaroslavgamayunov.toodoo.domain.common.teePipeTo
+import com.yaroslavgamayunov.toodoo.domain.common.then
+import com.yaroslavgamayunov.toodoo.domain.entities.Task
+import com.yaroslavgamayunov.toodoo.exception.Failure
+import com.yaroslavgamayunov.toodoo.util.PreferenceDelegate
+import com.yaroslavgamayunov.toodoo.util.toResultFlow
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
+import java.time.Instant
 import javax.inject.Inject
-import javax.inject.Named
 
 interface TaskRepository {
-    fun getAllTasks(): Flow<List<TaskEntity>>
-    suspend fun getTask(id: Int): TaskEntity
-    fun getCompletedTasks(): Flow<List<TaskEntity>>
-    fun getNumberOfCompletedTasks(): Flow<Int>
-    fun getUncompletedTasks(): Flow<List<TaskEntity>>
+    suspend fun refreshData(): Result<Unit>
 
-    suspend fun setCompleted(task: TaskEntity, isCompleted: Boolean)
-    suspend fun insertTasks(tasks: List<TaskEntity>)
-    suspend fun deleteTask(task: TaskEntity)
+    fun getAllTasks(): Flow<Result<List<Task>>>
+    fun getAllInTimeRange(minDeadline: Instant, maxDeadline: Instant): Flow<Result<List<Task>>>
+    suspend fun getTask(id: String): Result<Task>
+
+    fun getCompletedTasks(): Flow<Result<List<Task>>>
+
+    suspend fun updateTasks(tasks: List<Task>): Result<Unit>
+    suspend fun addTasks(tasks: List<Task>): Result<Unit>
+    suspend fun deleteTasks(tasks: List<Task>): Result<Unit>
 }
 
 class DefaultTaskRepository @Inject constructor(
-    database: TaskDatabase,
-    @Named("applicationCoroutineScope")
-    val applicationCoroutineScope: CoroutineScope
+    @LocalDataSource
+    private val localTaskDataSource: LocalTaskDataSource,
+    @RemoteDataSource
+    private val remoteTaskDataSource: TaskDataSource,
+    private val taskSyncer: TaskSyncer,
+    preferenceHelper: PreferenceHelper,
 ) : TaskRepository {
-    private val taskDao: TaskDao = database.taskDao()
-    override fun getAllTasks(): Flow<List<TaskEntity>> = taskDao.getAll()
 
-    override suspend fun getTask(id: Int): TaskEntity = taskDao.getTask(id)
+    private var lastSynchronizationTime: Long
+            by PreferenceDelegate(preferenceHelper, SYNC_TIME_PREFERENCE_KEY, 0)
 
-    override fun getCompletedTasks(): Flow<List<TaskEntity>> =
-        taskDao.getAll(completed = true)
+    override suspend fun refreshData(): Result<Unit> {
+        return Result.catch(failureResolver = { Failure.SynchronizationError }) {
+            val lastSync = Instant.ofEpochSecond(lastSynchronizationTime)
+            lastSynchronizationTime = Instant.now().epochSecond
 
-    override fun getNumberOfCompletedTasks(): Flow<Int> {
-        return taskDao.getNumberOfCompleted()
+            val localData = localTaskDataSource.getAllWithTimestamps()
+            val remoteData = remoteTaskDataSource.getAllWithTimestamps()
+
+            localTaskDataSource
+                .synchronizeChanges(taskSyncer.sync(localData, remoteData, lastSync))
+
+            remoteTaskDataSource
+                .synchronizeChanges(taskSyncer.sync(remoteData, localData, lastSync))
+        }
     }
 
-    override fun getUncompletedTasks(): Flow<List<TaskEntity>> =
-        taskDao.getAll(completed = false)
-
-    override suspend fun setCompleted(task: TaskEntity, isCompleted: Boolean) {
-        applicationCoroutineScope.launch {
-            taskDao.setCompleted(task.taskId, completed = isCompleted)
-        }.join()
+    override fun getAllTasks(): Flow<Result<List<Task>>> {
+        return localTaskDataSource.observeAll().toResultFlow()
     }
 
-    override suspend fun insertTasks(tasks: List<TaskEntity>) {
-        applicationCoroutineScope.launch {
-            taskDao.insertAll(tasks)
-        }.join()
+    override fun getAllInTimeRange(
+        minDeadline: Instant,
+        maxDeadline: Instant,
+    ): Flow<Result<List<Task>>> {
+        return localTaskDataSource.getAllInTimeRange(minDeadline, maxDeadline).toResultFlow()
     }
 
-    override suspend fun deleteTask(task: TaskEntity) {
-        applicationCoroutineScope.launch {
-            taskDao.delete(task)
-        }.join()
+    override suspend fun getTask(id: String): Result<Task> {
+        return Result.catch { localTaskDataSource.get(id) }
+    }
+
+    override fun getCompletedTasks(): Flow<Result<List<Task>>> {
+        return localTaskDataSource.getCompleted().toResultFlow()
+    }
+
+    override suspend fun updateTasks(tasks: List<Task>): Result<Unit> {
+        val params = TaskModificationParameters(tasks)
+        return params teePipeTo
+                localTaskDataSource::updateAll then
+                remoteTaskDataSource::updateAll
+    }
+
+    override suspend fun addTasks(tasks: List<Task>): Result<Unit> {
+        val params = TaskModificationParameters(tasks)
+        return params teePipeTo
+                localTaskDataSource::addAll then
+                remoteTaskDataSource::addAll
+    }
+
+    override suspend fun deleteTasks(tasks: List<Task>): Result<Unit> {
+        val params = TaskModificationParameters(tasks)
+        return params teePipeTo
+                localTaskDataSource::deleteAll then
+                remoteTaskDataSource::deleteAll
+    }
+
+    companion object {
+        private const val SYNC_TIME_PREFERENCE_KEY = "last_sync_time"
     }
 }

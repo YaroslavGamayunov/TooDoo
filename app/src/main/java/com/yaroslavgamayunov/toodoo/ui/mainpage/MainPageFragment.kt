@@ -5,24 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.fragment.app.Fragment
+import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.yaroslavgamayunov.toodoo.R
-import com.yaroslavgamayunov.toodoo.TooDooApplication
 import com.yaroslavgamayunov.toodoo.databinding.FragmentMainPageBinding
 import com.yaroslavgamayunov.toodoo.domain.common.doIfSuccess
+import com.yaroslavgamayunov.toodoo.ui.base.BaseFragment
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.MainPageViewModel
 import com.yaroslavgamayunov.toodoo.ui.viewmodel.TooDooViewModelFactory
+import com.yaroslavgamayunov.toodoo.util.appComponent
+import com.yaroslavgamayunov.toodoo.util.collectIn
 import com.yaroslavgamayunov.toodoo.util.getDrawableCompat
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MainPageFragment : Fragment() {
+class MainPageFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: TooDooViewModelFactory
     private val mainPageViewModel: MainPageViewModel by viewModels { viewModelFactory }
@@ -32,12 +32,15 @@ class MainPageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (requireActivity().application as TooDooApplication).viewModelComponent.inject(this)
+        requireActivity().application.appComponent!!.inject(this)
+
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Y, true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Y, false)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         return inflater.inflate(R.layout.fragment_main_page, container, false)
     }
@@ -52,6 +55,7 @@ class MainPageFragment : Fragment() {
         setupTaskList()
         setupHeader()
         setupSnackbar()
+        setupErrorHandling()
 
         binding!!.apply {
             addTaskFab.setOnClickListener {
@@ -79,6 +83,14 @@ class MainPageFragment : Fragment() {
                 mainPageScrollView.smoothScrollTo(0, 0)
                 mainPageAppbarLayout.setExpanded(true)
             }
+
+            mainPageViewModel.isRefreshing.collectIn(viewLifecycleOwner) {
+                mainPageSwipeRefreshLayout.isRefreshing = it
+            }
+
+            mainPageSwipeRefreshLayout.setOnRefreshListener {
+                mainPageViewModel.refreshTasks()
+            }
         }
     }
 
@@ -105,26 +117,21 @@ class MainPageFragment : Fragment() {
                 attachToRecyclerView(taskRecyclerView)
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            mainPageViewModel.tasks.collect {
-                it.doIfSuccess { data ->
-                    taskAdapter.submitList(data)
-                }
-            }
+
+        mainPageViewModel.tasks.collectIn(viewLifecycleOwner) {
+            taskAdapter.submitList(it)
         }
     }
 
     private fun setupHeader() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            mainPageViewModel.completedTaskCount.collect { result ->
-                result.doIfSuccess {
-                    binding!!.completedTaskCountTextView.text =
-                        requireActivity().resources.getQuantityString(
-                            R.plurals.completed_task_count,
-                            it,
-                            it
-                        )
-                }
+        mainPageViewModel.completedTaskCount.collectIn(viewLifecycleOwner) { result ->
+            result.doIfSuccess {
+                binding!!.completedTaskCountTextView.text =
+                    requireActivity().resources.getQuantityString(
+                        R.plurals.completed_task_count,
+                        it,
+                        it
+                    )
             }
         }
     }
@@ -140,21 +147,25 @@ class MainPageFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            mainPageViewModel.deletionUndoCount.collect {
-                if (it == 0) {
-                    snackbar.dismiss()
-                } else {
-                    snackbar.setText(
-                        requireActivity().resources.getQuantityString(
-                            R.plurals.deleted_task_count,
-                            it,
-                            it
-                        )
+        mainPageViewModel.recentlyDeletedTaskCount.collectIn(viewLifecycleOwner) {
+            if (it == 0) {
+                snackbar.dismiss()
+            } else {
+                snackbar.setText(
+                    requireActivity().resources.getQuantityString(
+                        R.plurals.deleted_task_count,
+                        it,
+                        it
                     )
-                    snackbar.show()
-                }
+                )
+                snackbar.show()
             }
+        }
+    }
+
+    private fun setupErrorHandling() {
+        mainPageViewModel.failures.collectIn(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), "failure=$it", Toast.LENGTH_LONG).show()
         }
     }
 }

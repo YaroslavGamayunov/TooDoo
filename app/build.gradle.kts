@@ -1,4 +1,5 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("com.android.application")
@@ -6,24 +7,35 @@ plugins {
     kotlin("kapt")
     id("kotlin-android")
     id("androidx.navigation.safeargs.kotlin")
+    jacoco
 }
 
 android {
-    compileSdkVersion(Versions.COMPILE_SDK)
+    compileSdkVersion(Config.COMPILE_SDK)
     buildToolsVersion = Versions.BUILD_TOOLS
 
     defaultConfig {
         applicationId = "com.yaroslavgamayunov.toodoo"
-        minSdkVersion(Versions.MIN_SDK)
-        targetSdkVersion(Versions.TARGET_SDK)
-        versionCode(Versions.VERSION_CODE)
-        versionName(Versions.VERSION_NAME)
+        minSdkVersion(Config.MIN_SDK)
+        targetSdkVersion(Config.TARGET_SDK)
+        versionCode(Config.VERSION_CODE)
+        versionName(Config.VERSION_NAME)
 
         multiDexEnabled = true
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.yaroslavgamayunov.toodoo.TooDooAndroidTestRunner"
+
+        buildConfigField(
+            "String",
+            "TASK_API_TOKEN",
+            "\"${Config.TASK_API_TOKEN}\""
+        )
     }
 
     buildTypes {
+        getByName("debug") {
+            isTestCoverageEnabled = true
+        }
+
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(
@@ -46,6 +58,10 @@ android {
         languageVersion = "1.5"
         jvmTarget = "1.8"
     }
+
+    testOptions {
+        animationsDisabled = true
+    }
 }
 
 dependencies {
@@ -59,6 +75,7 @@ dependencies {
     implementation(Dependencies.Android.MATERIAL)
     implementation(Dependencies.Android.CONSTRAINT_LAYOUT)
     implementation(Dependencies.Android.COORDINATOR_LAYOUT)
+    implementation(Dependencies.Android.SWIPE_REFRESH_LAYOUT)
     implementation(Dependencies.Android.FRAGMENT_KTX)
 
     implementation(Dependencies.Android.ROOM_RUNTIME)
@@ -68,20 +85,103 @@ dependencies {
     implementation(Dependencies.Android.NAVIGATION_UI_KTX)
     implementation(Dependencies.Android.NAVIGATION_FRAGMENT_KTX)
 
+    implementation(Dependencies.Android.WORK)
+    implementation(Dependencies.Android.RETROFIT)
+    implementation(Dependencies.Android.LOGGING_INTERCEPTOR)
+    implementation(Dependencies.Android.GSON)
+    implementation(Dependencies.Android.GSON_CONVERTER)
+    implementation(Dependencies.Android.TIMBER)
+    implementation(Dependencies.Android.LIFECYCLE_KTX)
+
     // DI
     implementation(Dependencies.DI.DAGGER)
     kapt(Dependencies.DI.DAGGER_COMPILER)
 
     // Testing
     testImplementation(Dependencies.Testing.JUNIT)
+    testImplementation(Dependencies.Testing.KOTEST_ASSERTIONS)
+    testImplementation(Dependencies.Testing.COROUTINES_TEST)
+    testImplementation(Dependencies.Testing.MOCKK)
+
+    kaptAndroidTest(Dependencies.DI.DAGGER_COMPILER)
+    androidTestImplementation(Dependencies.Testing.MOCKWEBSERVER)
+    androidTestImplementation(Dependencies.Testing.ESPRESSO_CONTRIB)
     androidTestImplementation(Dependencies.Testing.JUNIT_EXT)
+    androidTestImplementation(Dependencies.Testing.MOCKK_ANDROID)
     androidTestImplementation(Dependencies.Testing.ESPRESSO_CORE)
 
     // Core library desugaring
     coreLibraryDesugaring(Dependencies.CORE_LIBRARY_DESUGARING)
 }
 
-tasks.register("checkStatic") {
+jacoco {
+    toolVersion = Versions.JACOCO
+}
+
+tasks.register("jacocoTestReport", JacocoReport::class) {
+    reports {
+        xml.isEnabled = true
+        html.isEnabled = true
+    }
+
+    val fileFilter = setOf(
+        "**/R.class",
+        "**/R\$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*",
+        "**/*\$Lambda$*.*",
+        "**/*\$inlined$*.*"
+    )
+
+    val classDirectoriesTree =
+        fileTree(project.buildDir) {
+            include(
+                "**/classes/**/main/**",
+                "**/intermediates/classes/debug/**",
+                "**/intermediates/javac/debug/*/classes/**",
+                "**/tmp/kotlin-classes/debug/**")
+
+            exclude(fileFilter)
+        }
+
+    val sourceDirectoriesTree = fileTree(project.buildDir) {
+        include(
+            "src/main/java/**",
+            "src/main/kotlin/**",
+            "src/debug/java/**",
+            "src/debug/kotlin/**"
+        )
+    }
+
+    val executionDataTree = fileTree(project.buildDir) {
+        include("outputs/code_coverage/**/*.ec",
+            "jacoco/jacocoTestReportDebug.exec",
+            "jacoco/testDebugUnitTest.exec",
+            "jacoco/test.exec")
+    }
+
+    sourceDirectories.setFrom(sourceDirectoriesTree)
+    classDirectories.setFrom(classDirectoriesTree)
+    executionData.setFrom(executionDataTree)
+}
+
+tasks.withType(Test::class) {
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+        events = setOf(
+            TestLogEvent.PASSED,
+            TestLogEvent.SKIPPED,
+            TestLogEvent.FAILED
+        )
+        showStandardStreams = true
+    }
+}
+
+
+
+tasks.register("runStaticChecks") {
     group = "Verify"
     description = "Runs static checks on the build"
     dependsOn("detekt")

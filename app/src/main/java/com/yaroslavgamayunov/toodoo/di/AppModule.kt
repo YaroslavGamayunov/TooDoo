@@ -1,20 +1,32 @@
 package com.yaroslavgamayunov.toodoo.di
 
-import com.yaroslavgamayunov.toodoo.TooDooApplication
+import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.yaroslavgamayunov.toodoo.data.DefaultPreferenceHelper
+import com.yaroslavgamayunov.toodoo.data.PreferenceHelper
+import com.yaroslavgamayunov.toodoo.data.db.PriorityConverter
 import com.yaroslavgamayunov.toodoo.data.db.TaskDatabase
+import com.yaroslavgamayunov.toodoo.data.db.TimeConverter
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
+
+@Module(includes = [AppModuleBinds::class])
+class AppModule {
+    @ApplicationScoped
+    @Provides
+    fun provideTaskDatabase(@ApplicationContext context: Context): TaskDatabase {
+        return Room.databaseBuilder(context, TaskDatabase::class.java, TaskDatabase.NAME)
+            .addTypeConverter(TimeConverter())
+            .addTypeConverter(PriorityConverter())
+            .fallbackToDestructiveMigration().build()
+    }
+}
 
 @Module
-class AppModule(private val application: TooDooApplication) {
-    @Singleton
-    @Provides
-    fun provideApplication(): TooDooApplication = application
-
-    @Singleton
-    @Provides
-    fun provideTaskDatabase(): TaskDatabase {
-        return TaskDatabase.build(application)
-    }
+interface AppModuleBinds {
+    @ApplicationScoped
+    @Binds
+    fun bindPreferenceHelper(preferenceHelper: DefaultPreferenceHelper): PreferenceHelper
 }

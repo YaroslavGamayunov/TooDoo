@@ -1,25 +1,33 @@
 package com.yaroslavgamayunov.toodoo.domain.entities
 
-import androidx.room.ColumnInfo
-import java.time.Instant
-
-enum class TaskPriority(val level: Int) {
-    None(0),
-    Low(1),
-    High(2)
-}
-
-enum class TaskScheduleMode(val id: Int) {
-    ExactTime(0),
-    NotExactTime(1),
-    Unspecified(2)
-}
+import com.yaroslavgamayunov.toodoo.data.model.TaskPriority
+import com.yaroslavgamayunov.toodoo.util.TimeUtils
+import com.yaroslavgamayunov.toodoo.util.isStartOfDay
+import java.time.ZonedDateTime
+import java.util.*
 
 data class Task(
-    val taskId: Int,
+    val taskId: String,
     val description: String,
     val isCompleted: Boolean,
-    val deadline: Instant,
-    val scheduleMode: TaskScheduleMode,
+    val deadline: ZonedDateTime,
     val priority: TaskPriority
 )
+
+val Task.scheduleMode: TaskScheduleMode
+    get() {
+        if (this.deadline.toEpochSecond() == TimeUtils.maxZonedDateTime.toEpochSecond()) {
+            return TaskScheduleMode.Unspecified
+        }
+        val localDateTime = deadline.toLocalDateTime()
+        if (localDateTime.isStartOfDay()) {
+            return TaskScheduleMode.ByDate
+        }
+        return TaskScheduleMode.ByTime
+    }
+
+enum class TaskScheduleMode {
+    ByTime,
+    ByDate,
+    Unspecified
+}
